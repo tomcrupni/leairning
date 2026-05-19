@@ -26,10 +26,12 @@ if errorlevel 1 (
     exit /b 1
 )
 
-echo  [2/2] Arrancando servidor en http://localhost:8000
+echo  [2/2] Arrancando servidor LOCAL en http://localhost:8000
 echo.
-echo  Abri tu navegador en: http://localhost:8000
-echo  Presiona Ctrl+C para detener el servidor.
+echo  Local:  http://localhost:8000
+echo  Online: https://leairning.onrender.com
+echo.
+echo  Presiona Ctrl+C para detener el servidor local.
 echo.
 
 "%PYTHON%" main.py
