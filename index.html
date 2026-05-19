@@ -1,0 +1,1893 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LeAIrning — Dominá la Inteligencia Artificial</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#07070f;--bg2:#0e0e1a;--bg3:#14141f;--bg4:#1a1a2e;
+  --purple:#7c3aed;--purple2:#9f67fa;--cyan:#06b6d4;--cyan2:#22d3ee;
+  --pink:#ec4899;--orange:#f97316;--green:#10b981;
+  --text:#f1f5f9;--text2:#94a3b8;--text3:#64748b;
+  --border:#1e1e30;--border2:#2a2a40;
+  --grad:linear-gradient(135deg,#7c3aed,#06b6d4);
+  --grad2:linear-gradient(135deg,#9f67fa,#22d3ee);
+  --shadow:0 20px 60px rgba(124,58,237,.2);
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;overflow-x:hidden}
+a{text-decoration:none;color:inherit}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--bg2)}
+::-webkit-scrollbar-thumb{background:var(--purple);border-radius:3px}
+
+/* ── NAVBAR ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:0 5%;height:70px;display:flex;align-items:center;justify-content:space-between;background:rgba(7,7,15,.85);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+.nav-logo{font-size:1.5rem;font-weight:800;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.nav-links{display:flex;gap:2rem;list-style:none}
+.nav-links a{color:var(--text2);font-size:.9rem;transition:.2s;position:relative}
+.nav-links a::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:2px;background:var(--grad);transition:.3s}
+.nav-links a:hover{color:var(--text)}
+.nav-links a:hover::after{width:100%}
+.nav-auth{display:flex;gap:1rem;align-items:center}
+.btn-ghost{background:transparent;border:1px solid var(--border2);color:var(--text2);padding:.5rem 1.2rem;border-radius:8px;cursor:pointer;font-size:.9rem;transition:.2s}
+.btn-ghost:hover{border-color:var(--purple2);color:var(--text)}
+.btn-primary{background:var(--grad);color:#fff;padding:.5rem 1.4rem;border-radius:8px;cursor:pointer;font-size:.9rem;border:none;font-weight:600;transition:.2s;white-space:nowrap}
+.btn-primary:hover{opacity:.85;transform:translateY(-1px)}
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:5px}
+.hamburger span{display:block;width:24px;height:2px;background:var(--text);border-radius:2px;transition:.3s}
+.mobile-menu{display:none;position:fixed;top:70px;left:0;right:0;background:var(--bg2);border-bottom:1px solid var(--border);padding:1.5rem 5%;flex-direction:column;gap:1.2rem;z-index:999}
+.mobile-menu.open{display:flex}
+.mobile-menu a{color:var(--text2);font-size:1rem;padding:.5rem 0;border-bottom:1px solid var(--border)}
+
+/* ── HERO ── */
+#hero{padding:140px 5% 80px;text-align:center;position:relative;overflow:hidden}
+.hero-glow{position:absolute;top:10%;left:50%;transform:translateX(-50%);width:600px;height:600px;background:radial-gradient(circle,rgba(124,58,237,.25) 0%,transparent 70%);pointer-events:none}
+.hero-badge{display:inline-flex;align-items:center;gap:.5rem;background:rgba(124,58,237,.15);border:1px solid rgba(124,58,237,.4);border-radius:50px;padding:.4rem 1.2rem;font-size:.8rem;color:var(--purple2);margin-bottom:1.5rem}
+.hero-badge::before{content:'✦';animation:spin 3s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+h1.hero-title{font-size:clamp(2.2rem,5vw,4rem);font-weight:900;line-height:1.15;margin-bottom:1.2rem}
+h1.hero-title span{background:var(--grad2);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero-sub{color:var(--text2);font-size:1.1rem;max-width:600px;margin:0 auto 2.5rem}
+.hero-ctas{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+.btn-big{padding:.85rem 2.2rem;border-radius:12px;font-size:1rem;font-weight:700;cursor:pointer;transition:.25s;border:none}
+.btn-big-primary{background:var(--grad);color:#fff}
+.btn-big-primary:hover{opacity:.85;transform:translateY(-2px);box-shadow:0 10px 30px rgba(124,58,237,.4)}
+.btn-big-outline{background:transparent;border:2px solid var(--border2);color:var(--text);display:flex;align-items:center;gap:.5rem}
+.btn-big-outline:hover{border-color:var(--purple2);transform:translateY(-2px)}
+.hero-stats{display:flex;justify-content:center;gap:3rem;margin-top:3.5rem;flex-wrap:wrap}
+.stat-item{text-align:center}
+.stat-num{font-size:2rem;font-weight:800;background:var(--grad2);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.stat-label{font-size:.8rem;color:var(--text3);margin-top:.2rem}
+
+/* ── DEMO ── */
+#demo{padding:60px 5%;display:grid;grid-template-columns:1fr 1fr;gap:2rem;max-width:1200px;margin:0 auto}
+.demo-card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:1.5rem;overflow:hidden}
+.demo-card-header{display:flex;align-items:center;gap:.5rem;margin-bottom:1rem;padding-bottom:1rem;border-bottom:1px solid var(--border)}
+.demo-dot{width:10px;height:10px;border-radius:50%;background:var(--grad)}
+.demo-title{font-size:.85rem;font-weight:600;color:var(--text2)}
+.chat-msgs{display:flex;flex-direction:column;gap:.8rem;max-height:220px;overflow-y:auto;margin-bottom:1rem}
+.msg{max-width:85%;padding:.7rem 1rem;border-radius:12px;font-size:.85rem;line-height:1.5}
+.msg-ai{background:rgba(124,58,237,.15);border:1px solid rgba(124,58,237,.3);align-self:flex-start;border-radius:12px 12px 12px 2px}
+.msg-user{background:rgba(6,182,212,.1);border:1px solid rgba(6,182,212,.25);align-self:flex-end;border-radius:12px 12px 2px 12px}
+.chat-input-row{display:flex;gap:.5rem}
+.chat-input{flex:1;background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:.6rem .9rem;color:var(--text);font-size:.85rem;outline:none;transition:.2s}
+.chat-input:focus{border-color:var(--purple)}
+.chat-send{background:var(--grad);border:none;color:#fff;border-radius:8px;padding:.6rem .9rem;cursor:pointer;font-size:.85rem;font-weight:600;transition:.2s}
+.chat-send:hover{opacity:.8}
+.score-bars{display:flex;flex-direction:column;gap:.8rem}
+.score-row{display:flex;align-items:center;gap:.8rem}
+.score-label{width:90px;font-size:.78rem;color:var(--text2)}
+.score-bar-bg{flex:1;height:8px;background:var(--bg3);border-radius:4px;overflow:hidden}
+.score-bar-fill{height:100%;border-radius:4px;background:var(--grad);transition:width 1s ease}
+.score-val{width:35px;text-align:right;font-size:.78rem;font-weight:700;color:var(--cyan2)}
+.score-total{display:flex;justify-content:space-between;align-items:center;margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border)}
+.score-total-label{font-size:.85rem;color:var(--text2)}
+.score-total-val{font-size:1.5rem;font-weight:800;background:var(--grad2);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+
+/* ── SECTION LABELS ── */
+.section-label{text-align:center;margin-bottom:3rem}
+.section-badge{display:inline-block;background:rgba(124,58,237,.15);border:1px solid rgba(124,58,237,.3);border-radius:50px;padding:.35rem 1rem;font-size:.8rem;color:var(--purple2);margin-bottom:1rem}
+.section-title{font-size:clamp(1.8rem,3.5vw,2.8rem);font-weight:800;margin-bottom:.8rem}
+.section-title span{background:var(--grad2);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.section-sub{color:var(--text2);font-size:1rem;max-width:500px;margin:0 auto}
+
+/* ── NIVELES ── */
+#niveles{padding:80px 5%}
+.levels-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.5rem;max-width:1100px;margin:0 auto}
+.level-card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:1.8rem;cursor:pointer;transition:.3s;position:relative;overflow:hidden}
+.level-card::before{content:'';position:absolute;inset:0;background:var(--grad);opacity:0;transition:.3s}
+.level-card:hover::before{opacity:.05}
+.level-card:hover{transform:translateY(-4px);border-color:var(--purple);box-shadow:var(--shadow)}
+.level-num{font-size:3rem;font-weight:900;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1;margin-bottom:.5rem}
+.level-tag{font-size:.75rem;background:rgba(124,58,237,.2);color:var(--purple2);padding:.25rem .7rem;border-radius:50px;display:inline-block;margin-bottom:.8rem}
+.level-name{font-size:1.2rem;font-weight:700;margin-bottom:.5rem}
+.level-desc{font-size:.85rem;color:var(--text2);margin-bottom:1rem}
+.level-topics{list-style:none;display:flex;flex-direction:column;gap:.4rem}
+.level-topics li{font-size:.8rem;color:var(--text3);display:flex;align-items:center;gap:.5rem}
+.level-topics li::before{content:'→';color:var(--cyan);flex-shrink:0}
+.level-btn{margin-top:1.2rem;width:100%;padding:.65rem;background:var(--grad);border:none;color:#fff;border-radius:8px;font-weight:600;font-size:.85rem;cursor:pointer;transition:.2s}
+.level-btn:hover{opacity:.8}
+
+/* ── FEATURES ── */
+#features{padding:80px 5%;background:var(--bg2)}
+.features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.5rem;max-width:1100px;margin:0 auto}
+.feat-card{background:var(--bg3);border:1px solid var(--border);border-radius:16px;padding:1.8rem;transition:.3s;cursor:pointer}
+.feat-card:hover{transform:translateY(-4px);border-color:var(--purple);box-shadow:var(--shadow)}
+.feat-icon{width:50px;height:50px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;margin-bottom:1rem;background:rgba(124,58,237,.15)}
+.feat-name{font-size:1.1rem;font-weight:700;margin-bottom:.5rem}
+.feat-desc{font-size:.85rem;color:var(--text2);line-height:1.6;margin-bottom:1.2rem}
+.feat-link{font-size:.85rem;color:var(--cyan2);display:flex;align-items:center;gap:.3rem;transition:.2s}
+.feat-link:hover{gap:.6rem}
+
+/* ── PLAYGROUND ── */
+#playground{padding:80px 5%}
+.playground-wrap{max-width:900px;margin:0 auto;background:var(--bg2);border:1px solid var(--border);border-radius:20px;overflow:hidden}
+.playground-tabs{display:flex;border-bottom:1px solid var(--border)}
+.pg-tab{padding:.9rem 1.5rem;font-size:.9rem;cursor:pointer;color:var(--text2);border-bottom:2px solid transparent;transition:.2s}
+.pg-tab.active{color:var(--purple2);border-bottom-color:var(--purple2)}
+.pg-body{padding:2rem}
+.pg-row{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
+textarea.pg-input{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:1rem;color:var(--text);font-size:.9rem;min-height:150px;resize:vertical;outline:none;font-family:inherit;transition:.2s}
+textarea.pg-input:focus{border-color:var(--purple)}
+.pg-output{background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:1rem;min-height:150px;font-size:.85rem;color:var(--text2);line-height:1.7}
+.pg-controls{display:flex;gap:1rem;margin-top:1rem;flex-wrap:wrap;align-items:center}
+.pg-score-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:1rem;margin-top:1.5rem}
+.pg-score-item{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:1rem;text-align:center}
+.pg-score-circle{font-size:1.5rem;font-weight:800;background:var(--grad2);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.pg-score-name{font-size:.72rem;color:var(--text3);margin-top:.3rem}
+.select-styled{background:var(--bg3);border:1px solid var(--border2);color:var(--text);padding:.5rem .9rem;border-radius:8px;font-size:.85rem;outline:none;cursor:pointer}
+
+/* ── GENERATOR ── */
+#generator{padding:80px 5%;background:var(--bg2)}
+.gen-wrap{max-width:900px;margin:0 auto}
+.gen-input-area{background:var(--bg3);border:1px solid var(--border);border-radius:16px;padding:1.5rem;margin-bottom:1.5rem}
+.gen-label{font-size:.85rem;color:var(--text2);margin-bottom:.6rem;display:block}
+.gen-results{display:flex;flex-direction:column;gap:1rem}
+.gen-card{background:var(--bg3);border:1px solid var(--border);border-radius:14px;padding:1.3rem;transition:.3s;opacity:0;transform:translateY(10px)}
+.gen-card.visible{opacity:1;transform:translateY(0);transition:opacity .4s ease,transform .4s ease}
+.gen-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:.8rem}
+.gen-card-level{font-size:.75rem;font-weight:700;padding:.25rem .7rem;border-radius:50px}
+.level-basic{background:rgba(16,185,129,.15);color:#10b981}
+.level-pro{background:rgba(124,58,237,.15);color:var(--purple2)}
+.level-expert{background:rgba(236,72,153,.15);color:var(--pink)}
+.gen-card-text{font-size:.9rem;line-height:1.6;color:var(--text)}
+.gen-copy-btn{background:transparent;border:1px solid var(--border2);color:var(--text2);padding:.35rem .8rem;border-radius:6px;font-size:.75rem;cursor:pointer;transition:.2s}
+.gen-copy-btn:hover{border-color:var(--purple2);color:var(--text)}
+
+/* ── SIMULATOR ── */
+#simulator{padding:80px 5%}
+.sim-wrap{max-width:950px;margin:0 auto}
+.sim-jobs{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:2rem}
+.sim-job-card{background:var(--bg2);border:2px solid var(--border);border-radius:12px;padding:1.2rem;cursor:pointer;transition:.3s;text-align:center}
+.sim-job-card:hover,.sim-job-card.selected{border-color:var(--purple);background:rgba(124,58,237,.1)}
+.sim-job-icon{font-size:2rem;margin-bottom:.5rem}
+.sim-job-name{font-size:.9rem;font-weight:600}
+.sim-job-role{font-size:.75rem;color:var(--text3);margin-top:.2rem}
+.sim-scenario{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:1.8rem;display:none}
+.sim-scenario.active{display:block}
+.sim-scenario-title{font-size:1.1rem;font-weight:700;margin-bottom:.5rem;display:flex;align-items:center;gap:.5rem}
+.sim-context{background:var(--bg3);border-left:3px solid var(--purple);padding:1rem 1.2rem;border-radius:0 10px 10px 0;font-size:.88rem;color:var(--text2);line-height:1.6;margin:1rem 0}
+.sim-challenge{font-size:.9rem;color:var(--text);margin-bottom:1rem}
+.sim-feedback{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:1.2rem;margin-top:1rem;display:none}
+.sim-feedback.show{display:block}
+
+/* ── LIBRARY ── */
+#library{padding:80px 5%;background:var(--bg2)}
+.lib-wrap{max-width:1100px;margin:0 auto}
+.lib-search-row{display:flex;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap}
+.lib-search{flex:1;min-width:200px;background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:.7rem 1rem;color:var(--text);font-size:.9rem;outline:none;transition:.2s}
+.lib-search:focus{border-color:var(--purple)}
+.lib-cats{display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:1.5rem}
+.lib-cat{background:var(--bg3);border:1px solid var(--border);border-radius:50px;padding:.4rem .9rem;font-size:.8rem;color:var(--text2);cursor:pointer;transition:.2s}
+.lib-cat:hover,.lib-cat.active{background:rgba(124,58,237,.2);border-color:var(--purple);color:var(--purple2)}
+.lib-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.2rem}
+.lib-card{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:1.2rem;transition:.3s;cursor:pointer}
+.lib-card:hover{border-color:var(--purple2);transform:translateY(-2px)}
+.lib-card-cat{font-size:.72rem;color:var(--cyan2);margin-bottom:.4rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+.lib-card-title{font-size:.9rem;font-weight:600;margin-bottom:.5rem;line-height:1.4}
+.lib-card-text{font-size:.8rem;color:var(--text3);line-height:1.5;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.lib-card-footer{display:flex;justify-content:space-between;align-items:center;margin-top:.9rem;padding-top:.9rem;border-top:1px solid var(--border)}
+.lib-card-uses{font-size:.75rem;color:var(--text3)}
+.lib-card-copy{background:transparent;border:1px solid var(--border2);color:var(--text2);padding:.3rem .7rem;border-radius:6px;font-size:.73rem;cursor:pointer;transition:.2s}
+.lib-card-copy:hover{border-color:var(--purple2);color:var(--text)}
+
+/* ── COMPARADOR ── */
+#comparador{padding:80px 5%}
+.comp-wrap{max-width:1000px;margin:0 auto}
+.comp-area{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-bottom:2rem}
+.comp-box{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:1.5rem}
+.comp-box-label{font-size:.8rem;font-weight:600;color:var(--text2);margin-bottom:.7rem;display:flex;align-items:center;gap:.4rem}
+.comp-prompt-badge{font-size:.7rem;padding:.2rem .6rem;border-radius:50px}
+.badge-before{background:rgba(239,68,68,.15);color:#ef4444}
+.badge-after{background:rgba(16,185,129,.15);color:#10b981}
+.comp-score-row{display:flex;gap:1rem;flex-wrap:wrap;margin-top:1rem}
+.comp-score-item{flex:1;min-width:80px;background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:.8rem;text-align:center}
+.comp-score-num{font-size:1.4rem;font-weight:800}
+.comp-score-lbl{font-size:.7rem;color:var(--text3);margin-top:.2rem}
+.model-table{width:100%;border-collapse:collapse;margin-top:1.5rem}
+.model-table th{text-align:left;padding:.8rem 1rem;font-size:.8rem;color:var(--text3);border-bottom:1px solid var(--border);font-weight:600}
+.model-table td{padding:.9rem 1rem;font-size:.85rem;border-bottom:1px solid var(--border)}
+.model-table tr:last-child td{border-bottom:none}
+.model-table tr:hover td{background:rgba(255,255,255,.02)}
+.badge-yes{color:var(--green);font-weight:700}
+.badge-no{color:#ef4444}
+.badge-partial{color:var(--orange)}
+.model-tag{display:inline-block;padding:.2rem .6rem;border-radius:50px;font-size:.72rem;font-weight:600}
+.tag-openai{background:rgba(16,185,129,.15);color:#10b981}
+.tag-anthropic{background:rgba(249,115,22,.15);color:var(--orange)}
+.tag-google{background:rgba(6,182,212,.15);color:var(--cyan2)}
+.tag-perplexity{background:rgba(124,58,237,.15);color:var(--purple2)}
+
+/* ── COMMUNITY ── */
+#comunidad{padding:80px 5%;background:var(--bg2)}
+.comm-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.5rem;max-width:1100px;margin:0 auto}
+.comm-card{background:var(--bg3);border:1px solid var(--border);border-radius:16px;padding:1.5rem;transition:.3s;cursor:pointer}
+.comm-card:hover{transform:translateY(-4px);border-color:var(--purple)}
+.comm-card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.8rem}
+.comm-cat-tag{font-size:.72rem;font-weight:700;padding:.25rem .7rem;border-radius:50px;text-transform:uppercase}
+.cat-prod{background:rgba(16,185,129,.15);color:#10b981}
+.cat-mkt{background:rgba(249,115,22,.15);color:var(--orange)}
+.cat-dev{background:rgba(124,58,237,.15);color:var(--purple2)}
+.cat-estudio{background:rgba(6,182,212,.15);color:var(--cyan2)}
+.comm-trending{font-size:.72rem;color:var(--orange);display:flex;align-items:center;gap:.3rem}
+.comm-title{font-size:1rem;font-weight:700;margin-bottom:.5rem;line-height:1.4}
+.comm-desc{font-size:.83rem;color:var(--text2);line-height:1.5;margin-bottom:1rem}
+.comm-meta{display:flex;justify-content:space-between;align-items:center;font-size:.75rem;color:var(--text3)}
+.comm-saves{display:flex;align-items:center;gap:.3rem}
+.comm-time-save{color:var(--green);font-weight:600}
+.like-btn{background:transparent;border:1px solid var(--border2);color:var(--text3);padding:.3rem .7rem;border-radius:6px;font-size:.75rem;cursor:pointer;transition:.2s;display:flex;align-items:center;gap:.3rem}
+.like-btn:hover,.like-btn.liked{border-color:var(--pink);color:var(--pink)}
+
+/* ── PROGRESO / GAMIFICATION ── */
+#progreso{padding:80px 5%}
+.prog-wrap{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:2rem}
+.prog-card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:1.8rem}
+.prog-card-title{font-size:1rem;font-weight:700;margin-bottom:1.2rem;display:flex;align-items:center;gap:.5rem}
+.xp-bar-wrap{background:var(--bg3);border-radius:10px;height:12px;overflow:hidden;margin-bottom:.5rem}
+.xp-bar{height:100%;background:var(--grad);border-radius:10px;transition:width 1.5s ease}
+.xp-info{display:flex;justify-content:space-between;font-size:.8rem;color:var(--text3)}
+.level-badge-big{display:flex;align-items:center;gap:1rem;background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:1rem;margin-bottom:1.2rem}
+.level-circle{width:56px;height:56px;border-radius:50%;background:var(--grad);display:flex;align-items:center;justify-content:center;font-size:1.3rem;font-weight:900;color:#fff;flex-shrink:0}
+.streak-row{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.8rem}
+.streak-day{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;border:1px solid var(--border)}
+.streak-day.done{background:var(--grad);border-color:transparent;color:#fff}
+.streak-day.today{border-color:var(--purple);color:var(--purple2)}
+.badges-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.8rem;margin-top:.5rem}
+.badge-item{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:.8rem;text-align:center;transition:.3s;cursor:pointer}
+.badge-item:hover{border-color:var(--purple);transform:scale(1.05)}
+.badge-item.locked{opacity:.4;filter:grayscale(1)}
+.badge-emoji{font-size:1.5rem;display:block;margin-bottom:.3rem}
+.badge-name{font-size:.7rem;color:var(--text3)}
+.daily-challenges{display:flex;flex-direction:column;gap:.8rem}
+.challenge-item{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:1rem;display:flex;justify-content:space-between;align-items:center;transition:.3s}
+.challenge-item:hover{border-color:var(--purple2)}
+.challenge-left{display:flex;gap:.7rem;align-items:center}
+.challenge-icon{font-size:1.3rem;margin-right:.7rem}
+.challenge-name{font-size:.88rem;font-weight:600}
+.challenge-xp{font-size:.75rem;color:var(--cyan2)}
+.challenge-btn{background:var(--grad);border:none;color:#fff;padding:.4rem .9rem;border-radius:8px;font-size:.78rem;font-weight:600;cursor:pointer;transition:.2s}
+.challenge-btn:hover{opacity:.8}
+.challenge-btn.done{background:var(--bg);border:1px solid var(--green);color:var(--green)}
+.skill-tree{display:flex;flex-direction:column;gap:1rem}
+.skill-node{background:var(--bg3);border:2px solid var(--border);border-radius:12px;padding:1rem;display:flex;align-items:center;gap:.8rem;transition:.3s;cursor:pointer;position:relative}
+.skill-node:hover:not(.locked){border-color:var(--purple)}
+.skill-node.unlocked{border-color:var(--green)}
+.skill-node.locked{opacity:.5}
+.skill-node-icon{font-size:1.4rem;margin-right:.8rem;flex-shrink:0}
+.skill-node-name{font-size:.9rem;font-weight:600}
+.skill-node-req{font-size:.75rem;color:var(--text3)}
+.skill-node-status{margin-left:auto;font-size:.8rem;font-weight:600}
+
+/* ── FINAL CTA ── */
+#cta{padding:100px 5%;text-align:center;position:relative;overflow:hidden}
+.cta-glow{position:absolute;bottom:-50%;left:50%;transform:translateX(-50%);width:600px;height:600px;background:radial-gradient(circle,rgba(6,182,212,.15) 0%,transparent 65%);pointer-events:none}
+.cta-title{font-size:clamp(2rem,4vw,3.2rem);font-weight:900;margin-bottom:1rem}
+.cta-title span{background:var(--grad2);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.cta-sub{color:var(--text2);font-size:1.05rem;margin-bottom:2.5rem;max-width:500px;margin-left:auto;margin-right:auto}
+.cta-benefits{display:flex;justify-content:center;gap:2rem;flex-wrap:wrap;margin-bottom:2.5rem}
+.cta-benefit{display:flex;align-items:center;gap:.5rem;font-size:.9rem;color:var(--text2)}
+.cta-benefit::before{content:'✓';color:var(--green);font-weight:700}
+
+/* ── FOOTER ── */
+footer{background:var(--bg2);border-top:1px solid var(--border);padding:50px 5% 30px}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;margin-bottom:3rem;max-width:1100px;margin-left:auto;margin-right:auto}
+.footer-brand .nav-logo{font-size:1.4rem;margin-bottom:.8rem;display:block}
+.footer-brand p{font-size:.85rem;color:var(--text3);line-height:1.6}
+.footer-col-title{font-size:.85rem;font-weight:700;margin-bottom:1rem;color:var(--text)}
+.footer-links{list-style:none;display:flex;flex-direction:column;gap:.6rem}
+.footer-links li{margin-bottom:.6rem}
+.footer-links a{font-size:.83rem;color:var(--text3);transition:.2s}
+.footer-links a:hover{color:var(--purple2)}
+.footer-bottom{display:flex;justify-content:space-between;align-items:center;padding-top:2rem;border-top:1px solid var(--border);font-size:.8rem;color:var(--text3);flex-wrap:gap;gap:1rem;max-width:1100px;margin:0 auto}
+
+/* ── MODALS ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:2000;display:none;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(4px)}
+.modal-overlay.open{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:20px;padding:2.5rem;width:100%;max-width:440px;position:relative}
+.modal-close{position:absolute;top:1.2rem;right:1.2rem;background:transparent;border:none;color:var(--text2);font-size:1.2rem;cursor:pointer;line-height:1;transition:.2s}
+.modal-close:hover{color:var(--text)}
+.modal-title{font-size:1.5rem;font-weight:800;margin-bottom:.3rem}
+.modal-sub{font-size:.85rem;color:var(--text2);margin-bottom:1.8rem}
+.form-group{margin-bottom:1.2rem}
+.form-label{font-size:.82rem;color:var(--text2);margin-bottom:.4rem;display:block}
+.form-input{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:.75rem 1rem;color:var(--text);font-size:.9rem;outline:none;transition:.2s}
+.form-input:focus{border-color:var(--purple)}
+.form-divider{text-align:center;color:var(--text3);font-size:.82rem;margin:1.2rem 0;position:relative}
+.form-divider::before,.form-divider::after{content:'';position:absolute;top:50%;width:42%;height:1px;background:var(--border)}
+.form-divider::before{left:0}
+.form-divider::after{right:0}
+.modal-switch{text-align:center;margin-top:1.2rem;font-size:.85rem;color:var(--text2)}
+.modal-switch a{color:var(--purple2);cursor:pointer}
+.modal-switch a:hover{text-decoration:underline}
+.form-error{font-size:.78rem;color:#ef4444;margin-top:.3rem;display:none}
+.form-error.show{display:block}
+
+/* ── TOAST ── */
+.toast-container{position:fixed;bottom:2rem;right:2rem;z-index:9999;display:flex;flex-direction:column;gap:.6rem}
+.toast{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:.9rem 1.4rem;font-size:.87rem;display:flex;align-items:center;gap.6rem;gap:.6rem;box-shadow:0 8px 30px rgba(0,0,0,.4);animation:slideIn .3s ease;max-width:320px}
+.toast.success{border-left:3px solid var(--green)}
+.toast.error{border-left:3px solid #ef4444}
+.toast.info{border-left:3px solid var(--cyan)}
+@keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes slideOut{from{transform:translateX(0);opacity:1}to{transform:translateX(100%);opacity:0}}
+.toast.hiding{animation:slideOut .3s ease forwards}
+
+/* ── PASSWORD TOGGLE ── */
+.pwd-wrap{position:relative}
+.pwd-toggle{position:absolute;right:.8rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:1rem;color:var(--text3);padding:.2rem;line-height:1;transition:.2s}
+.pwd-toggle:hover{color:var(--text)}
+.pwd-strength{height:4px;border-radius:2px;margin-top:.4rem;background:var(--border2);overflow:hidden}
+.pwd-strength-bar{height:100%;width:0%;transition:.35s;border-radius:2px;background:var(--green)}
+.forgot-link{display:block;text-align:right;font-size:.8rem;color:var(--purple2);cursor:pointer;margin-top:.3rem}
+.forgot-link:hover{text-decoration:underline}
+
+/* ── UTILITY ── */
+.section-wrap{max-width:1100px;margin:0 auto}
+.text-grad{background:var(--grad2);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hidden{display:none!important}
+.fade-in{opacity:0;transform:translateY(20px);transition:opacity .6s ease,transform .6s ease}
+.fade-in.visible{opacity:1;transform:translateY(0)}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  .nav-links,.nav-auth .btn-ghost{display:none}
+  .hamburger{display:flex}
+  #demo{grid-template-columns:1fr}
+  .pg-row{grid-template-columns:1fr}
+  .comp-area{grid-template-columns:1fr}
+  .prog-wrap{grid-template-columns:1fr}
+  .footer-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:600px){
+  .hero-stats{gap:1.5rem}
+  .pg-score-grid{grid-template-columns:repeat(3,1fr)}
+  .footer-grid{grid-template-columns:1fr}
+  .footer-bottom{flex-direction:column;text-align:center}
+}
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="style.css">
+<script src="/animations.js" defer></script>
+</head>
+<body>
+
+<!-- ── NAVBAR ── -->
+<nav id="navbar">
+  <a class="nav-logo" href="#hero">LeAIrning</a>
+  <ul class="nav-links">
+    <li><a href="#niveles">Niveles</a></li>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#comparador">Comparador</a></li>
+    <li><a href="#comunidad">Comunidad</a></li>
+    <li><a href="#progreso">Progreso</a></li>
+  </ul>
+  <div class="nav-auth">
+    <button class="btn-ghost" onclick="openModal('login')">Iniciar sesión</button>
+    <button class="btn-primary" onclick="openModal('register')">Empezar gratis</button>
+  </div>
+  <div class="hamburger" id="hamburger" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#niveles" onclick="closeMenu()">Niveles</a>
+  <a href="#features" onclick="closeMenu()">Features</a>
+  <a href="#comparador" onclick="closeMenu()">Comparador</a>
+  <a href="#comunidad" onclick="closeMenu()">Comunidad</a>
+  <a href="#progreso" onclick="closeMenu()">Progreso</a>
+  <button class="btn-primary" onclick="openModal('register');closeMenu()">Empezar gratis</button>
+</div>
+
+<!-- ── HERO ── -->
+<section id="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-badge">✦ La plataforma #1 para dominar la IA</div>
+  <h1 class="hero-title word-reveal">Dominá la Inteligencia Artificial en tiempo real</h1>
+  <p class="hero-sub">No teoría vacía. Practicá con IA en tiempo real, mejorá tus prompts, automatizá tu trabajo y subí al siguiente nivel.</p>
+  <div class="hero-ctas">
+    <button class="btn-big btn-big-primary" onclick="openModal('register')">🚀 Empezar ahora</button>
+    <button class="btn-big btn-big-outline" onclick="document.getElementById('demo').scrollIntoView({behavior:'smooth'})">▶ Ver cómo funciona</button>
+  </div>
+  <div class="hero-stats">
+    <div class="stat-item"><div class="stat-num" data-target="47">0</div><div class="stat-label">K+ Estudiantes activos</div></div>
+    <div class="stat-item"><div class="stat-num" data-target="12">0</div><div class="stat-label">K+ Prompts en la biblioteca</div></div>
+    <div class="stat-item"><div class="stat-num" data-target="98">0</div><div class="stat-label">% Satisfaction rate</div></div>
+    <div class="stat-item"><div class="stat-num" data-target="4.9">0</div><div class="stat-label">★ Rating promedio</div></div>
+  </div>
+</section>
+
+<!-- ── INTERACTIVE DEMO ── -->
+<section id="demo">
+  <!-- AI Tutor chat -->
+  <div class="demo-card fade-in">
+    <div class="demo-card-header">
+      <div class="demo-dot"></div>
+      <span class="demo-title">AI Tutor Interactivo</span>
+      <span style="margin-left:auto;font-size:.75rem;color:var(--green)">● Online</span>
+    </div>
+    <div class="chat-msgs" id="demoChat">
+      <div class="msg msg-ai">¡Hola! Soy tu tutor de IA. ¿Qué querés aprender hoy?</div>
+      <div class="msg msg-user">¿Qué es el context window?</div>
+      <div class="msg msg-ai">¡Buena pregunta! El <strong>context window</strong> es la "memoria de trabajo" de un modelo de IA — la cantidad de texto que puede considerar al mismo tiempo. Imaginaló como una mesa: todo lo que entra a esa mesa está "activo" para el modelo.</div>
+    </div>
+    <div class="chat-input-row">
+      <input class="chat-input" id="demoChatInput" type="text" placeholder="Preguntá algo sobre IA..." onkeydown="if(event.key==='Enter')sendDemoMsg()">
+      <button class="chat-send" onclick="sendDemoMsg()">→</button>
+    </div>
+  </div>
+
+  <!-- Prompt Scoring -->
+  <div class="demo-card fade-in">
+    <div class="demo-card-header">
+      <div class="demo-dot"></div>
+      <span class="demo-title">Prompt Scoring en tiempo real</span>
+    </div>
+    <p style="font-size:.8rem;color:var(--text2);margin-bottom:1rem">Escribí un prompt y mirá su análisis:</p>
+    <textarea class="pg-input" id="demoPromptInput" style="min-height:70px" placeholder="Ej: Actuá como experto en marketing..." oninput="liveScore(this.value)"></textarea>
+    <div class="score-bars" id="scoreBars" style="margin-top:1rem">
+      <div class="score-row" style="display:flex;align-items:center;gap:.5rem">
+        <span class="score-label">Claridad</span>
+        <div class="score-bar-bg"><div class="score-bar-fill" id="sb-clarity" style="width:0%"></div></div>
+        <span class="score-val" id="sv-clarity">0</span>
+      </div>
+      <div class="score-row" style="display:flex;align-items:center;gap:.5rem;margin-top:.6rem">
+        <span class="score-label">Contexto</span>
+        <div class="score-bar-bg"><div class="score-bar-fill" id="sb-context" style="width:0%"></div></div>
+        <span class="score-val" id="sv-context">0</span>
+      </div>
+      <div class="score-row" style="display:flex;align-items:center;gap:.5rem;margin-top:.6rem">
+        <span class="score-label">Precisión</span>
+        <div class="score-bar-bg"><div class="score-bar-fill" id="sb-precision" style="width:0%"></div></div>
+        <span class="score-val" id="sv-precision">0</span>
+      </div>
+      <div class="score-row" style="display:flex;align-items:center;gap:.5rem;margin-top:.6rem">
+        <span class="score-label">Estructura</span>
+        <div class="score-bar-bg"><div class="score-bar-fill" id="sb-structure" style="width:0%"></div></div>
+        <span class="score-val" id="sv-structure">0</span>
+      </div>
+      <div class="score-row" style="display:flex;align-items:center;gap:.5rem;margin-top:.6rem">
+        <span class="score-label">Detalle</span>
+        <div class="score-bar-bg"><div class="score-bar-fill" id="sb-detail" style="width:0%"></div></div>
+        <span class="score-val" id="sv-detail">0</span>
+      </div>
+    </div>
+    <div class="score-total">
+      <span class="score-total-label">Puntuación total</span>
+      <span class="score-total-val" id="scoreTotal">0/100</span>
+    </div>
+  </div>
+</section>
+
+<!-- ── NIVELES ── -->
+<section id="niveles">
+  <div class="section-label fade-in">
+    <div class="section-badge">📚 Niveles de aprendizaje</div>
+    <h2 class="section-title">Tu camino de <span>Principiante a Experto</span></h2>
+    <p class="section-sub">Cuatro niveles progresivos con contenido práctico y aplicable desde el primer día.</p>
+  </div>
+  <div class="levels-grid">
+    <div class="level-card fade-in">
+      <div class="level-num">01</div>
+      <div class="level-tag">Principiante</div>
+      <div class="level-name">Primeros pasos</div>
+      <div class="level-desc">Fundamentos de IA y tus primeros prompts.</div>
+      <ul class="level-topics">
+        <li>Fundamentos de IA</li>
+        <li>Introducción a ChatGPT</li>
+        <li>Prompts para principiantes</li>
+        <li>Casos de uso básicos</li>
+      </ul>
+      <button class="level-btn" onclick="startLevel(1)">Comenzar nivel →</button>
+    </div>
+    <div class="level-card fade-in">
+      <div class="level-num">02</div>
+      <div class="level-tag">Básico</div>
+      <div class="level-name">Ganando tracción</div>
+      <div class="level-desc">Diferencias entre modelos y creación de contenido.</div>
+      <ul class="level-topics">
+        <li>Diferencias entre modelos</li>
+        <li>Creación de contenido</li>
+        <li>Automatización básica</li>
+        <li>Flujos de trabajo simples</li>
+      </ul>
+      <button class="level-btn" onclick="startLevel(2)">Comenzar nivel →</button>
+    </div>
+    <div class="level-card fade-in">
+      <div class="level-num">03</div>
+      <div class="level-tag">Intermedio</div>
+      <div class="level-name">Prompt Engineering</div>
+      <div class="level-desc">Técnicas avanzadas y context windows.</div>
+      <ul class="level-topics">
+        <li>Técnicas avanzadas</li>
+        <li>Context windows</li>
+        <li>Chain of thought</li>
+        <li>Few-shot prompting</li>
+      </ul>
+      <button class="level-btn" onclick="startLevel(3)">Comenzar nivel →</button>
+    </div>
+    <div class="level-card fade-in">
+      <div class="level-num">04</div>
+      <div class="level-tag">Avanzado</div>
+      <div class="level-name">Agentes y sistemas</div>
+      <div class="level-desc">APIs, automatización compleja y multi-modelo.</div>
+      <ul class="level-topics">
+        <li>APIs y herramientas</li>
+        <li>Automatización compleja</li>
+        <li>Flujos multi-modelo</li>
+        <li>Agentes autónomos</li>
+      </ul>
+      <button class="level-btn" onclick="startLevel(4)">Comenzar nivel →</button>
+    </div>
+  </div>
+</section>
+
+<!-- ── FEATURES ── -->
+<section id="features">
+  <div class="section-label fade-in">
+    <div class="section-badge">⚡ Herramientas</div>
+    <h2 class="section-title">Todo lo que necesitás para <span>dominar la IA</span></h2>
+    <p class="section-sub">Seis herramientas diseñadas para que aprendas haciendo.</p>
+  </div>
+  <div class="bento-grid">
+
+    <!-- Row 1: Tutor (8) + Stat (4) -->
+    <div class="feat-card col-8 row-2 accent-purple fade-in" onclick="document.getElementById('demo').scrollIntoView({behavior:'smooth'})" style="cursor:pointer">
+      <div class="card-glow"></div>
+      <div class="feat-icon">🤖</div>
+      <div class="feat-name">AI Tutor Interactivo</div>
+      <div class="feat-desc">Aprendizaje personalizado 24/7 adaptado a tu nivel. El tutor responde preguntas, explica conceptos y te guía paso a paso en español rioplatense.</div>
+      <div class="feat-link" style="margin-top:1rem">Probar ahora <span>→</span></div>
+      <div style="margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid rgba(99,102,241,0.2);display:flex;gap:1.5rem">
+        <div><div style="font-size:1.4rem;font-weight:800;color:#818cf8">24/7</div><div style="font-size:0.72rem;color:var(--text3)">Disponible</div></div>
+        <div><div style="font-size:1.4rem;font-weight:800;color:#22d3ee">∞</div><div style="font-size:0.72rem;color:var(--text3)">Preguntas</div></div>
+        <div><div style="font-size:1.4rem;font-weight:800;color:#a5b4fc">GPT</div><div style="font-size:0.72rem;color:var(--text3)">Powered</div></div>
+      </div>
+    </div>
+
+    <div class="feat-card col-4 accent-cyan fade-in">
+      <div class="card-glow"></div>
+      <div class="feat-stat">47K+</div>
+      <div class="feat-name" style="margin-top:0.5rem">Estudiantes activos</div>
+      <div class="feat-desc" style="font-size:0.78rem;margin-top:0.3rem">Comunidad creciendo cada día</div>
+    </div>
+
+    <div class="feat-card col-4 accent-pink fade-in">
+      <div class="card-glow"></div>
+      <div class="feat-stat">12K+</div>
+      <div class="feat-name" style="margin-top:0.5rem">Prompts en biblioteca</div>
+      <div class="feat-desc" style="font-size:0.78rem;margin-top:0.3rem">Listos para usar hoy</div>
+    </div>
+
+    <!-- Row 3: Playground (4) + Generator (4) + Simulator (4) -->
+    <div class="feat-card col-4 fade-in" onclick="document.getElementById('playground').scrollIntoView({behavior:'smooth'})" style="cursor:pointer">
+      <div class="feat-icon">🎮</div>
+      <div class="feat-name">Prompt Playground</div>
+      <div class="feat-desc">Testea y analizá tus prompts con métricas de claridad, contexto, precisión y más.</div>
+      <div class="feat-link">Ir al Playground <span>→</span></div>
+    </div>
+
+    <div class="feat-card col-4 accent-orange fade-in" onclick="document.getElementById('generator').scrollIntoView({behavior:'smooth'})" style="cursor:pointer">
+      <div class="card-glow"></div>
+      <div class="feat-icon">✨</div>
+      <div class="feat-name">Generador de Prompts</div>
+      <div class="feat-desc">Describí tu objetivo y generá versiones básica, profesional y experta automáticamente.</div>
+      <div class="feat-link">Generar prompts <span>→</span></div>
+    </div>
+
+    <div class="feat-card col-4 fade-in" onclick="document.getElementById('simulator').scrollIntoView({behavior:'smooth'})" style="cursor:pointer">
+      <div class="feat-icon">💼</div>
+      <div class="feat-name">Simulador de Trabajos</div>
+      <div class="feat-desc">Practicá con casos reales de marketing, desarrollo, diseño y más roles.</div>
+      <div class="feat-link">Ver simulador <span>→</span></div>
+    </div>
+
+    <!-- Row 4: Library (6) + Dashboard (6) -->
+    <div class="feat-card col-6 accent-green fade-in" onclick="document.getElementById('library').scrollIntoView({behavior:'smooth'})" style="cursor:pointer">
+      <div class="card-glow"></div>
+      <div class="feat-icon">📚</div>
+      <div class="feat-name">Biblioteca de Prompts</div>
+      <div class="feat-desc">+12.000 prompts categorizados y listos para usar. Buscá, filtrá y copiá al instante.</div>
+      <div class="feat-link">Explorar biblioteca <span>→</span></div>
+    </div>
+
+    <div class="feat-card col-6 fade-in" onclick="document.getElementById('progreso').scrollIntoView({behavior:'smooth'})" style="cursor:pointer">
+      <div class="feat-icon">📊</div>
+      <div class="feat-name">Dashboard Personal</div>
+      <div class="feat-desc">Seguí tu XP, logros, racha diaria y árbol de habilidades. Visualizá tu evolución.</div>
+      <div class="feat-link">Ver dashboard <span>→</span></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── PLAYGROUND ── -->
+<section id="playground">
+  <div class="section-label fade-in">
+    <div class="section-badge">🎮 Herramienta</div>
+    <h2 class="section-title">Prompt <span>Playground</span></h2>
+    <p class="section-sub">Analizá, mejorá y comparás tus prompts en tiempo real.</p>
+  </div>
+  <div class="playground-wrap scale-in">
+    <div class="playground-tabs">
+      <div class="pg-tab active" onclick="pgTab('analyze',this)">Analizar</div>
+      <div class="pg-tab" onclick="pgTab('improve',this)">Mejorar</div>
+      <div class="pg-tab" onclick="pgTab('compare',this)">Comparar</div>
+    </div>
+    <div class="pg-body">
+      <!-- Analyze tab -->
+      <div id="pg-analyze">
+        <div class="pg-row">
+          <div>
+            <p style="font-size:.82rem;color:var(--text2);margin-bottom:.6rem">Tu prompt:</p>
+            <textarea class="pg-input" id="pgAnalyzeInput" placeholder="Escribí tu prompt aquí..."></textarea>
+          </div>
+          <div>
+            <p style="font-size:.82rem;color:var(--text2);margin-bottom:.6rem">Análisis:</p>
+            <div class="pg-output" id="pgAnalyzeOutput">El análisis aparecerá aquí...</div>
+          </div>
+        </div>
+        <div class="pg-controls">
+          <select class="select-styled" id="pgModel">
+            <option>ChatGPT-4o</option>
+            <option>Claude 3.5</option>
+            <option>Gemini Pro</option>
+          </select>
+          <button class="btn-primary" onclick="analyzePrompt()">⚡ Analizar prompt</button>
+        </div>
+        <div class="pg-score-grid" id="pgScoreGrid">
+          <div class="pg-score-item"><div class="pg-score-circle" id="pgs-clarity">—</div><div class="pg-score-name">Claridad</div></div>
+          <div class="pg-score-item"><div class="pg-score-circle" id="pgs-context">—</div><div class="pg-score-name">Contexto</div></div>
+          <div class="pg-score-item"><div class="pg-score-circle" id="pgs-precision">—</div><div class="pg-score-name">Precisión</div></div>
+          <div class="pg-score-item"><div class="pg-score-circle" id="pgs-structure">—</div><div class="pg-score-name">Estructura</div></div>
+          <div class="pg-score-item"><div class="pg-score-circle" id="pgs-detail">—</div><div class="pg-score-name">Detalle</div></div>
+        </div>
+      </div>
+      <!-- Improve tab -->
+      <div id="pg-improve" class="hidden">
+        <div class="pg-row">
+          <div>
+            <p style="font-size:.82rem;color:var(--text2);margin-bottom:.6rem">Prompt original:</p>
+            <textarea class="pg-input" id="pgImproveInput" placeholder="Pegá tu prompt para mejorar..."></textarea>
+          </div>
+          <div>
+            <p style="font-size:.82rem;color:var(--text2);margin-bottom:.6rem">Versión mejorada:</p>
+            <div class="pg-output" id="pgImproveOutput">La versión mejorada aparecerá aquí...</div>
+          </div>
+        </div>
+        <div class="pg-controls">
+          <select class="select-styled" id="pgImproveStyle">
+            <option>Estilo profesional</option>
+            <option>Más específico</option>
+            <option>Más creativo</option>
+            <option>Más conciso</option>
+          </select>
+          <button class="btn-primary" onclick="improvePrompt()">✨ Mejorar prompt</button>
+          <button class="btn-ghost" onclick="copyText('pgImproveOutput')">📋 Copiar</button>
+        </div>
+      </div>
+      <!-- Compare tab -->
+      <div id="pg-compare" class="hidden">
+        <div class="pg-row">
+          <div>
+            <p style="font-size:.82rem;color:var(--text2);margin-bottom:.6rem">Prompt A:</p>
+            <textarea class="pg-input" id="pgCompA" placeholder="Primer prompt..."></textarea>
+          </div>
+          <div>
+            <p style="font-size:.82rem;color:var(--text2);margin-bottom:.6rem">Prompt B:</p>
+            <textarea class="pg-input" id="pgCompB" placeholder="Segundo prompt..."></textarea>
+          </div>
+        </div>
+        <div class="pg-controls">
+          <button class="btn-primary" onclick="comparePrompts()">⚖️ Comparar</button>
+        </div>
+        <div id="pgCompResult" class="pg-output hidden" style="margin-top:1rem"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── GENERATOR ── -->
+<section id="generator">
+  <div class="section-label fade-in">
+    <div class="section-badge">✨ Herramienta</div>
+    <h2 class="section-title">Generador de <span>Prompts</span></h2>
+    <p class="section-sub">Describí lo que necesitás y obtené 3 versiones optimizadas al instante.</p>
+  </div>
+  <div class="gen-wrap">
+    <div class="gen-input-area fade-in">
+      <label class="gen-label">¿Para qué necesitás el prompt? Describí tu objetivo:</label>
+      <textarea class="pg-input" id="genGoal" placeholder="Ej: Quiero un prompt para resumir artículos técnicos en puntos clave para no técnicos..." style="min-height:90px"></textarea>
+      <div style="display:flex;gap:1rem;margin-top:1rem;flex-wrap:wrap;align-items:center">
+        <select class="select-styled" id="genTone">
+          <option>Tono profesional</option>
+          <option>Tono casual</option>
+          <option>Tono técnico</option>
+          <option>Tono creativo</option>
+        </select>
+        <select class="select-styled" id="genModel">
+          <option>ChatGPT</option>
+          <option>Claude</option>
+          <option>Gemini</option>
+        </select>
+        <button class="btn-primary" onclick="generatePrompts()">⚡ Generar 3 versiones</button>
+      </div>
+    </div>
+    <div class="gen-results" id="genResults"></div>
+  </div>
+</section>
+
+<!-- ── SIMULATOR ── -->
+<section id="simulator">
+  <div class="section-label fade-in">
+    <div class="section-badge">💼 Herramienta</div>
+    <h2 class="section-title">Simulador de <span>Trabajos Reales</span></h2>
+    <p class="section-sub">Practicá con casos reales de distintos roles y recibí feedback inmediato.</p>
+  </div>
+  <div class="sim-wrap">
+    <div class="sim-jobs" data-stagger="80">
+      <div class="sim-job-card" onclick="selectJob('marketing',this)">
+        <div class="sim-job-icon">📣</div>
+        <div class="sim-job-name">Marketing</div>
+        <div class="sim-job-role">Content Creator</div>
+      </div>
+      <div class="sim-job-card" onclick="selectJob('dev',this)">
+        <div class="sim-job-icon">💻</div>
+        <div class="sim-job-name">Desarrollo</div>
+        <div class="sim-job-role">Full-Stack Dev</div>
+      </div>
+      <div class="sim-job-card" onclick="selectJob('design',this)">
+        <div class="sim-job-icon">🎨</div>
+        <div class="sim-job-name">Diseño</div>
+        <div class="sim-job-role">UX Designer</div>
+      </div>
+      <div class="sim-job-card" onclick="selectJob('data',this)">
+        <div class="sim-job-icon">📊</div>
+        <div class="sim-job-name">Data</div>
+        <div class="sim-job-role">Data Analyst</div>
+      </div>
+      <div class="sim-job-card" onclick="selectJob('support',this)">
+        <div class="sim-job-icon">🎧</div>
+        <div class="sim-job-name">Soporte</div>
+        <div class="sim-job-role">Customer Success</div>
+      </div>
+    </div>
+    <div id="simScenario" class="sim-scenario">
+      <div class="sim-scenario-title" id="simTitle">🎯 Seleccioná un rol</div>
+      <div class="sim-context" id="simContext"></div>
+      <p style="font-size:.88rem;color:var(--text);margin-bottom:.5rem;font-weight:600">🎯 Desafío:</p>
+      <p class="sim-challenge" id="simChallenge"></p>
+      <textarea class="pg-input" id="simAnswer" placeholder="Escribí tu prompt aquí..." style="min-height:100px"></textarea>
+      <div style="display:flex;gap:1rem;margin-top:1rem">
+        <button class="btn-primary" onclick="submitSim()">Enviar respuesta</button>
+        <button class="btn-ghost" onclick="nextScenario()">Siguiente desafío →</button>
+      </div>
+      <div class="sim-feedback" id="simFeedback"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── LIBRARY ── -->
+<section id="library">
+  <div class="section-label fade-in">
+    <div class="section-badge">📚 Biblioteca</div>
+    <h2 class="section-title">+12.000 Prompts <span>listos para usar</span></h2>
+    <p class="section-sub">Buscá, filtrá y copiá el prompt perfecto para cada situación.</p>
+  </div>
+  <div class="lib-wrap">
+    <div class="lib-search-row fade-in">
+      <input class="lib-search" id="libSearch" type="text" placeholder="🔍 Buscar prompts..." oninput="filterLibrary()">
+      <select class="select-styled" id="libSort" onchange="filterLibrary()">
+        <option value="popular">Más populares</option>
+        <option value="new">Más nuevos</option>
+        <option value="saved">Más guardados</option>
+      </select>
+    </div>
+    <div class="lib-cats fade-in" id="libCats">
+      <div class="lib-cat active" onclick="filterCat('all',this)">Todos</div>
+      <div class="lib-cat" onclick="filterCat('productividad',this)">Productividad</div>
+      <div class="lib-cat" onclick="filterCat('marketing',this)">Marketing</div>
+      <div class="lib-cat" onclick="filterCat('programacion',this)">Programación</div>
+      <div class="lib-cat" onclick="filterCat('estudio',this)">Estudio</div>
+      <div class="lib-cat" onclick="filterCat('negocios',this)">Negocios</div>
+      <div class="lib-cat" onclick="filterCat('diseño',this)">Diseño</div>
+      <div class="lib-cat" onclick="filterCat('escritura',this)">Escritura</div>
+    </div>
+    <div class="lib-grid" id="libGrid"></div>
+  </div>
+</section>
+
+<!-- ── COMPARADOR ── -->
+<section id="comparador">
+  <div class="section-label fade-in">
+    <div class="section-badge">⚖️ Comparador</div>
+    <h2 class="section-title">Comparador de <span>Prompts y Modelos</span></h2>
+    <p class="section-sub">Medí el impacto de un prompt mejorado y compará capacidades entre modelos.</p>
+  </div>
+  <div class="comp-wrap">
+    <div class="comp-area fade-in">
+      <div class="comp-box">
+        <div class="comp-box-label">
+          <span class="comp-prompt-badge badge-before">ANTES</span>
+          Prompt sin optimizar
+        </div>
+        <textarea class="pg-input" id="compBefore" placeholder="Ej: Escribime un mail..." style="min-height:100px"></textarea>
+        <div class="comp-score-row" id="compBeforeScores"></div>
+      </div>
+      <div class="comp-box">
+        <div class="comp-box-label">
+          <span class="comp-prompt-badge badge-after">DESPUÉS</span>
+          Prompt optimizado
+        </div>
+        <textarea class="pg-input" id="compAfter" placeholder="Ej: Actuá como experto en comunicación corporativa. Redactá un email..." style="min-height:100px"></textarea>
+        <div class="comp-score-row" id="compAfterScores"></div>
+      </div>
+    </div>
+    <div style="text-align:center;margin-bottom:2.5rem">
+      <button class="btn-primary" style="padding:.75rem 2rem" onclick="runComparator()">⚖️ Comparar prompts</button>
+    </div>
+    <div class="fade-in">
+      <h3 style="font-size:1.1rem;font-weight:700;margin-bottom:1rem">Comparación de modelos</h3>
+      <div style="overflow-x:auto">
+        <table class="model-table">
+          <thead>
+            <tr>
+              <th>Modelo</th>
+              <th>Empresa</th>
+              <th>Razonamiento</th>
+              <th>Código</th>
+              <th>Creatividad</th>
+              <th>Contexto</th>
+              <th>Precio</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>ChatGPT-4o</strong> <span class="model-tag tag-openai">OpenAI</span></td>
+              <td>OpenAI</td>
+              <td><span class="badge-yes">★★★★★</span></td>
+              <td><span class="badge-yes">★★★★★</span></td>
+              <td><span class="badge-yes">★★★★☆</span></td>
+              <td>128K</td>
+              <td>$20/mes</td>
+            </tr>
+            <tr>
+              <td><strong>Claude 3.5</strong> <span class="model-tag tag-anthropic">Anthropic</span></td>
+              <td>Anthropic</td>
+              <td><span class="badge-yes">★★★★★</span></td>
+              <td><span class="badge-yes">★★★★★</span></td>
+              <td><span class="badge-yes">★★★★★</span></td>
+              <td>200K</td>
+              <td>$20/mes</td>
+            </tr>
+            <tr>
+              <td><strong>Gemini Pro</strong> <span class="model-tag tag-google">Google</span></td>
+              <td>Google</td>
+              <td><span class="badge-yes">★★★★☆</span></td>
+              <td><span class="badge-yes">★★★★☆</span></td>
+              <td><span class="badge-yes">★★★★☆</span></td>
+              <td>1M</td>
+              <td>$20/mes</td>
+            </tr>
+            <tr>
+              <td><strong>Perplexity</strong> <span class="model-tag tag-perplexity">Perplexity</span></td>
+              <td>Perplexity AI</td>
+              <td><span class="badge-yes">★★★★☆</span></td>
+              <td><span class="badge-partial">★★★☆☆</span></td>
+              <td><span class="badge-partial">★★★☆☆</span></td>
+              <td>32K</td>
+              <td>$20/mes</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── COMUNIDAD ── -->
+<section id="comunidad">
+  <div class="section-label fade-in">
+    <div class="section-badge">🌐 Comunidad</div>
+    <h2 class="section-title">Workflows <span>trending</span> esta semana</h2>
+    <p class="section-sub">Los flujos de trabajo más populares de nuestra comunidad.</p>
+  </div>
+  <div class="comm-grid" id="commGrid"></div>
+</section>
+
+<!-- ── PROGRESO ── -->
+<section id="progreso">
+  <div class="section-label fade-in">
+    <div class="section-badge">📊 Dashboard</div>
+    <h2 class="section-title">Tu <span>Progreso</span></h2>
+    <p class="section-sub">Seguí tu evolución, logros y desafíos diarios.</p>
+  </div>
+  <div class="prog-wrap" data-stagger="120">
+    <!-- XP & Level -->
+    <div class="prog-card">
+      <div class="prog-card-title">⚡ Nivel y XP</div>
+      <div class="level-badge-big">
+        <div class="level-circle" id="userLevel">3</div>
+        <div>
+          <div style="font-size:1.1rem;font-weight:700">Intermedio</div>
+          <div style="font-size:.82rem;color:var(--text2)">2.840 XP acumulados</div>
+        </div>
+      </div>
+      <p style="font-size:.82rem;color:var(--text2);margin-bottom:.5rem">Progreso al nivel 4:</p>
+      <div class="xp-bar-wrap"><div class="xp-bar" id="xpBar" style="width:0%"></div></div>
+      <div class="xp-info"><span>2.840 XP</span><span>4.000 XP</span></div>
+      <div style="margin-top:1.5rem">
+        <p style="font-size:.82rem;color:var(--text2);margin-bottom:.8rem">🔥 Racha de <strong id="streakCount">18</strong> días:</p>
+        <div class="streak-row" id="streakRow"></div>
+      </div>
+    </div>
+    <!-- Badges -->
+    <div class="prog-card">
+      <div class="prog-card-title">🏆 Logros</div>
+      <div class="badges-grid" id="badgesGrid"></div>
+    </div>
+    <!-- Daily challenges -->
+    <div class="prog-card">
+      <div class="prog-card-title">🎯 Desafíos del día</div>
+      <div class="daily-challenges" id="dailyChallenges"></div>
+    </div>
+    <!-- Skill tree -->
+    <div class="prog-card">
+      <div class="prog-card-title">🌳 Árbol de habilidades</div>
+      <div class="skill-tree" id="skillTree"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA ── -->
+<section id="cta">
+  <div class="cta-glow"></div>
+  <div class="cta-benefits">
+    <div class="cta-benefit">Sin tarjeta de crédito</div>
+    <div class="cta-benefit">Acceso inmediato</div>
+    <div class="cta-benefit">Cancelá cuando quieras</div>
+  </div>
+  <h2 class="cta-title fade-in">Empezá a dominar la <span>IA hoy</span></h2>
+  <p class="cta-sub fade-in">Únete a 47.000+ estudiantes que ya están usando IA para trabajar mejor y más rápido.</p>
+  <button class="btn-big btn-big-primary fade-in" onclick="openModal('register')">🚀 Empezar gratis ahora</button>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <span class="nav-logo">LeAIrning</span>
+      <p>La plataforma #1 para dominar la Inteligencia Artificial con práctica real.</p>
+    </div>
+    <div>
+      <div class="footer-col-title">Producto</div>
+      <ul class="footer-links">
+        <li><a href="#features">Features</a></li>
+        <li><a href="#niveles">Niveles</a></li>
+        <li><a href="#playground">Playground</a></li>
+        <li><a href="#library">Biblioteca</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Comunidad</div>
+      <ul class="footer-links">
+        <li><a href="#comunidad">Workflows</a></li>
+        <li><a href="#comparador">Comparador</a></li>
+        <li><a href="#progreso">Progreso</a></li>
+        <li><a href="#" onclick="openModal('register');return false">Empezar gratis</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Recursos</div>
+      <ul class="footer-links">
+        <li><a href="#">Blog</a></li>
+        <li><a href="#">Guías</a></li>
+        <li><a href="#">Soporte</a></li>
+        <li><a href="#">Contacto</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 LeAIrning. Todos los derechos reservados.</span>
+    <div style="display:flex;gap:1.5rem">
+      <a href="#">Privacidad</a>
+      <a href="#">Términos</a>
+      <a href="#">Cookies</a>
+    </div>
+  </div>
+</footer>
+
+<!-- ── MODALS ── -->
+<div class="modal-overlay" id="modalLogin">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('login')">✕</button>
+    <div class="modal-title">Bienvenido de vuelta 👋</div>
+    <div class="modal-sub">Iniciá sesión para continuar tu aprendizaje.</div>
+    <div class="form-group">
+      <label class="form-label">Email</label>
+      <input class="form-input" id="loginEmail" type="email" placeholder="tu@email.com">
+      <div class="form-error" id="loginEmailErr">Ingresá un email válido</div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Contraseña</label>
+      <div class="pwd-wrap">
+        <input class="form-input" id="loginPass" type="password" placeholder="••••••••" style="padding-right:2.8rem">
+        <button type="button" class="pwd-toggle" onclick="togglePwd('loginPass',this)">👁</button>
+      </div>
+      <span class="forgot-link" onclick="showToast('Te enviaremos un email de recuperación','info')">¿Olvidaste tu contraseña?</span>
+      <div class="form-error" id="loginPassErr">Ingresá tu contraseña</div>
+    </div>
+    <button class="btn-primary" style="width:100%;padding:.85rem;font-size:1rem;margin-top:.5rem" onclick="submitLogin()">Iniciar sesión</button>
+    <div class="form-divider">o</div>
+    <button class="btn-ghost" style="width:100%;padding:.75rem" onclick="socialLogin('Google')">🔵 Continuar con Google</button>
+    <div class="modal-switch">¿No tenés cuenta? <a onclick="closeModal('login');openModal('register')">Registrate gratis</a></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalRegister">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('register')">✕</button>
+    <div class="modal-title">Empezá gratis 🚀</div>
+    <div class="modal-sub">Creá tu cuenta y empezá a dominar la IA hoy.</div>
+    <div class="form-group">
+      <label class="form-label">Nombre completo</label>
+      <input class="form-input" id="regName" type="text" placeholder="Tu nombre">
+      <div class="form-error" id="regNameErr">Ingresá tu nombre</div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Email</label>
+      <input class="form-input" id="regEmail" type="email" placeholder="tu@email.com">
+      <div class="form-error" id="regEmailErr">Ingresá un email válido</div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Contraseña</label>
+      <div class="pwd-wrap">
+        <input class="form-input" id="regPass" type="password" placeholder="Mínimo 8 caracteres" oninput="checkPwdStrength(this.value)" style="padding-right:2.8rem">
+        <button type="button" class="pwd-toggle" onclick="togglePwd('regPass',this)">👁</button>
+      </div>
+      <div class="pwd-strength"><div class="pwd-strength-bar" id="pwdStrengthBar"></div></div>
+      <div class="form-error" id="regPassErr">Mínimo 8 caracteres</div>
+    </div>
+    <button class="btn-primary" style="width:100%;padding:.85rem;font-size:1rem;margin-top:.5rem" onclick="submitRegister()">Crear cuenta gratis</button>
+    <div class="form-divider">o</div>
+    <button class="btn-ghost" style="width:100%;padding:.75rem" onclick="socialLogin('Google')">🔵 Registrarse con Google</button>
+    <div class="modal-switch">¿Ya tenés cuenta? <a onclick="closeModal('register');openModal('login')">Iniciá sesión</a></div>
+  </div>
+</div>
+
+<!-- ── TOAST CONTAINER ── -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+// ─── CONFIG ───────────────────────────────────────────────────────────────
+const API_BASE = '';
+
+// ─── ESTADO GLOBAL ────────────────────────────────────────────────────
+const APP={
+  user:null,
+  xp:0,level:1,streak:0,
+  libFilter:'all',libSearch:'',libSort:'popular',
+  currentJob:null,currentChallenge:0,
+  likes:new Set(),
+  challengesDone:new Set(),
+  chatHistory:[]
+};
+
+// ─── TOKEN HELPERS ─────────────────────────────────────────────────────────
+function getToken(){return localStorage.getItem('leairning_token');}
+function setToken(t){localStorage.setItem('leairning_token',t);}
+function clearToken(){localStorage.removeItem('leairning_token');}
+
+// ─── API HELPERS ───────────────────────────────────────────────────────────
+async function apiPost(path,body){
+  const headers={'Content-Type':'application/json'};
+  if(getToken())headers['Authorization']='Bearer '+getToken();
+  const res=await fetch(API_BASE+path,{method:'POST',headers,body:JSON.stringify(body)});
+  if(!res.ok){const e=await res.json().catch(()=>({detail:'Error del servidor'}));throw new Error(e.detail||'Error del servidor');}
+  return res.json();
+}
+async function apiGet(path){
+  const headers={};
+  if(getToken())headers['Authorization']='Bearer '+getToken();
+  const res=await fetch(API_BASE+path,{headers});
+  if(!res.ok)throw new Error('Error del servidor');
+  return res.json();
+}
+function setLoading(btn,loading){
+  if(!btn)return;
+  if(loading){btn._orig=btn.innerHTML;btn.innerHTML='<span style="opacity:.6">⏳ Procesando...</span>';btn.disabled=true;}
+  else{btn.innerHTML=btn._orig||btn.innerHTML;btn.disabled=false;}
+}
+
+// ─── UTILIDADES ───────────────────────────────────────────────────────
+function showToast(msg,type='info'){
+  const c=document.getElementById('toastContainer');
+  const t=document.createElement('div');
+  t.className=`toast ${type}`;
+  const icon={success:'✅',error:'❌',info:'💡'}[type]||'💡';
+  t.innerHTML=`<span>${icon}</span> ${msg}`;
+  c.appendChild(t);
+  setTimeout(()=>{t.classList.add('hiding');setTimeout(()=>t.remove(),300)},3500);
+}
+function fallbackCopy(txt){
+  const ta=document.createElement('textarea');
+  ta.value=txt;ta.style.cssText='position:fixed;top:-9999px;left:-9999px';
+  document.body.appendChild(ta);ta.select();
+  try{document.execCommand('copy');showToast('Prompt copiado','success');}
+  catch{showToast('No se pudo copiar — seleccioná el texto manualmente','error');}
+  document.body.removeChild(ta);
+}
+function copyRaw(txt){
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(()=>showToast('Prompt copiado','success')).catch(()=>fallbackCopy(txt));
+  }else{fallbackCopy(txt);}
+}
+function copyText(elId){
+  const el=document.getElementById(elId);
+  copyRaw(el.value||el.textContent);
+}
+
+// ─── NAVBAR ───────────────────────────────────────────────────────────
+window.addEventListener('scroll',()=>{
+  document.getElementById('navbar').style.background=
+    window.scrollY>50?'rgba(7,7,15,.97)':'rgba(7,7,15,.85)';
+});
+function toggleMenu(){document.getElementById('mobileMenu').classList.toggle('open')}
+function closeMenu(){document.getElementById('mobileMenu').classList.remove('open')}
+document.querySelectorAll('.nav-links a').forEach(a=>a.addEventListener('click',closeMenu));
+
+function updateNavAuth(){
+  const auth=document.querySelector('.nav-auth');
+  if(APP.user){
+    const first=APP.user.name.split(' ')[0];
+    auth.innerHTML=`
+      <span style="font-size:.85rem;color:var(--text2)">Hola, <strong style="color:var(--text)">${first}</strong> 👋</span>
+      <span style="font-size:.8rem;color:var(--cyan2);font-weight:700">${APP.xp.toLocaleString()} XP</span>
+      <button class="btn-ghost" onclick="document.getElementById('progreso').scrollIntoView({behavior:'smooth'})">Mi Dashboard</button>
+      <button class="btn-primary" onclick="logout()">Salir</button>`;
+  }else{
+    auth.innerHTML=`
+      <button class="btn-ghost" onclick="openModal('login')">Iniciar sesión</button>
+      <button class="btn-primary" onclick="openModal('register')">Empezar gratis</button>`;
+  }
+}
+function logout(){
+  clearToken();
+  APP.user=null;APP.xp=0;APP.level=1;APP.streak=0;
+  APP.likes=new Set();APP.challengesDone=new Set();APP.chatHistory=[];
+  updateNavAuth();
+  showToast('Sesión cerrada','info');
+}
+
+// ─── AUTO LOGIN ────────────────────────────────────────────────────────────
+async function tryAutoLogin(){
+  if(!getToken())return;
+  try{
+    const data=await apiGet('/api/auth/me');
+    APP.user=data;APP.xp=data.xp||0;APP.level=data.level||1;APP.streak=data.streak||0;
+    APP.challengesDone=new Set(data.challenges_done||[]);APP.likes=new Set(data.likes||[]);
+    updateNavAuth();initDashboard();renderCommunity();
+  }catch{clearToken();}
+}
+
+// ─── HERO COUNTERS ────────────────────────────────────────────────────
+function animateCounters(){
+  document.querySelectorAll('[data-target]').forEach(el=>{
+    const target=parseFloat(el.dataset.target);
+    const isDecimal=target%1!==0;
+    let current=0;const step=target/60;
+    const timer=setInterval(()=>{
+      current+=step;
+      if(current>=target){current=target;clearInterval(timer);}
+      el.textContent=isDecimal?current.toFixed(1):Math.round(current);
+    },25);
+  });
+}
+const heroObs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){animateCounters();heroObs.disconnect();}});
+},{threshold:.5});
+heroObs.observe(document.getElementById('hero'));
+
+// ─── FADE IN ──────────────────────────────────────────────────────────
+const fadeObs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');});
+},{threshold:.1});
+document.querySelectorAll('.fade-in').forEach(el=>fadeObs.observe(el));
+
+// ─── DEMO CHAT (IA real) ──────────────────────────────────────────────────
+async function sendDemoMsg(){
+  const input=document.getElementById('demoChatInput');
+  const val=input.value.trim();if(!val)return;
+  const chat=document.getElementById('demoChat');
+  const userMsg=document.createElement('div');
+  userMsg.className='msg msg-user';userMsg.textContent=val;
+  chat.appendChild(userMsg);input.value='';chat.scrollTop=chat.scrollHeight;
+  const typing=document.createElement('div');
+  typing.className='msg msg-ai';
+  typing.innerHTML='<em style="color:var(--text3)">Escribiendo...</em>';
+  chat.appendChild(typing);chat.scrollTop=chat.scrollHeight;
+  APP.chatHistory.push({role:'user',content:val});
+  try{
+    const data=await apiPost('/api/ai/chat',{message:val,history:APP.chatHistory.slice(-6)});
+    typing.innerHTML=data.response;
+    APP.chatHistory.push({role:'assistant',content:data.response});
+  }catch(e){
+    typing.innerHTML=`<em style="color:#ef4444">⚠️ Servidor no disponible. Asegurate de que main.py esté corriendo.</em>`;
+  }
+  chat.scrollTop=chat.scrollHeight;
+}
+
+// ─── SCORING ──────────────────────────────────────────────────────────
+function scorePrompt(txt){
+  const len=txt.length;
+  if(!len)return{clarity:0,context:0,precision:0,structure:0,detail:0};
+  const hasRole=/actua|sos\s+|eres\s+|como\s+experto|rol\s*:/i.test(txt)?15:0;
+  const hasCtx=/contexto|situaci[oó]n|proyecto|empresa|cliente|background/i.test(txt)?15:0;
+  const hasFormat=/lista|tabla|puntos|formato|ejemplo|estructura|bullets?/i.test(txt)?15:0;
+  const hasDetail=len>150?20:len>80?12:len>40?6:0;
+  const hasTone=/profesional|formal|casual|t[eé]cnico|creativo|emp[aá]tico/i.test(txt)?10:0;
+  const hasConstraint=/m[aá]ximo|m[ií]nimo|sin\s|no\s|evit[aá]|solo\s|[uú]nicamente/i.test(txt)?8:0;
+  const clarity=Math.min(100,20+hasRole+Math.min(30,len/4));
+  const context=Math.min(100,10+hasCtx+hasDetail*2);
+  const precision=Math.min(100,15+hasFormat+hasDetail+hasTone+hasConstraint);
+  const structure=Math.min(100,10+hasRole+hasFormat+Math.min(20,len/6));
+  const detail=Math.min(100,5+hasDetail*3+hasCtx*2+hasConstraint);
+  return{clarity:Math.round(clarity),context:Math.round(context),precision:Math.round(precision),structure:Math.round(structure),detail:Math.round(detail)};
+}
+function liveScore(txt){
+  const s=scorePrompt(txt);
+  ['clarity','context','precision','structure','detail'].forEach(k=>{
+    const bar=document.getElementById(`sb-${k}`);
+    const val=document.getElementById(`sv-${k}`);
+    if(bar){bar.style.width=s[k]+'%';val.textContent=s[k];}
+  });
+  const total=Math.round((s.clarity+s.context+s.precision+s.structure+s.detail)/5);
+  const el=document.getElementById('scoreTotal');if(el)el.textContent=total+'/100';
+}
+
+// ─── PLAYGROUND ───────────────────────────────────────────────────────
+function pgTab(tab,btn){
+  document.querySelectorAll('.pg-tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  ['analyze','improve','compare'].forEach(t=>{
+    const el=document.getElementById(`pg-${t}`);
+    if(el){if(t===tab)el.classList.remove('hidden');else el.classList.add('hidden');}
+  });
+}
+async function analyzePrompt(){
+  const txt=document.getElementById('pgAnalyzeInput').value.trim();
+  if(!txt)return showToast('Escribí un prompt primero','error');
+  const btn=document.querySelector('#pg-analyze .btn-primary');
+  setLoading(btn,true);
+  document.getElementById('pgAnalyzeOutput').innerHTML='<em style="color:var(--text3)">⏳ Analizando con Gemini...</em>';
+  try{
+    const data=await apiPost('/api/ai/analyze',{prompt:txt});
+    ['clarity','context','precision','structure','detail'].forEach(k=>{
+      const el=document.getElementById(`pgs-${k}`);
+      if(el){el.textContent=data.scores[k];el.style.color=data.scores[k]>=70?'var(--green)':data.scores[k]>=40?'var(--orange)':'#ef4444';}
+    });
+    const icon=data.rating==='Experto'?'🏆':data.rating==='Bueno'?'⚡':data.rating==='En progreso'?'📈':'🌱';
+    document.getElementById('pgAnalyzeOutput').innerHTML=
+      `<strong>Análisis IA</strong> — ${txt.length} caracteres<br><br>`+
+      `Puntuación: <strong>${data.overall}/100</strong> ${icon} ${data.rating}<br><br>`+
+      `<strong>Puntos fuertes:</strong><br>${(data.strengths||[]).map(s=>'✓ '+s).join('<br>')}<br><br>`+
+      `<strong>Sugerencias:</strong><br>${(data.suggestions||[]).map(s=>'→ '+s).join('<br>')}<br><br>`+
+      `<em style="color:var(--text3)">${data.summary||''}</em>`;
+    if(data.xp_earned&&APP.user){APP.xp+=data.xp_earned;updateNavAuth();showToast(`+${data.xp_earned} XP ganados`,'success');}
+    else showToast('Análisis completado','success');
+  }catch(e){
+    document.getElementById('pgAnalyzeOutput').innerHTML=`<em style="color:#ef4444">Error: ${e.message}</em>`;
+    showToast('Error: '+e.message,'error');
+  }finally{setLoading(btn,false);}
+}
+async function improvePrompt(){
+  const txt=document.getElementById('pgImproveInput').value.trim();
+  if(!txt)return showToast('Pegá tu prompt primero','error');
+  const style=document.getElementById('pgImproveStyle').value;
+  const btn=document.querySelector('#pg-improve .btn-primary');
+  setLoading(btn,true);
+  document.getElementById('pgImproveOutput').innerHTML='<em style="color:var(--text3)">⏳ Mejorando con Gemini...</em>';
+  try{
+    const data=await apiPost('/api/ai/improve',{prompt:txt,style});
+    document.getElementById('pgImproveOutput').innerHTML=data.improved.replace(/\n/g,'<br>');
+    if(data.xp_earned&&APP.user){APP.xp+=data.xp_earned;updateNavAuth();}
+    showToast('Prompt mejorado con IA ✨','success');
+  }catch(e){
+    document.getElementById('pgImproveOutput').innerHTML=`<em style="color:#ef4444">Error: ${e.message}</em>`;
+    showToast('Error: '+e.message,'error');
+  }finally{setLoading(btn,false);}
+}
+async function comparePrompts(){
+  const a=document.getElementById('pgCompA').value.trim();
+  const b=document.getElementById('pgCompB').value.trim();
+  if(!a||!b)return showToast('Completá ambos prompts','error');
+  const btn=document.querySelector('#pg-compare .btn-primary');
+  setLoading(btn,true);
+  const res=document.getElementById('pgCompResult');
+  res.classList.remove('hidden');
+  res.innerHTML='<em style="color:var(--text3)">⏳ Comparando con Gemini...</em>';
+  try{
+    const data=await apiPost('/api/ai/compare',{prompt_a:a,prompt_b:b});
+    const labels={clarity:'Claridad',context:'Contexto',precision:'Precisión',structure:'Estructura',detail:'Detalle'};
+    const rows=Object.keys(data.scores_a||{}).map(k=>{
+      const va=data.scores_a[k],vb=data.scores_b[k],w=va>=vb?'🅰️':'🅱️';
+      return `${labels[k]||k}: A=${va} vs B=${vb} → ${w} +${Math.abs(va-vb)} pts`;
+    }).join('<br>');
+    res.innerHTML=`<strong>🅰️ Prompt A: ${data.overall_a}/100</strong> &nbsp;|&nbsp; <strong>🅱️ Prompt B: ${data.overall_b}/100</strong><br><br>`+
+      `🏆 Ganador: <strong>Prompt ${data.winner}</strong> (+${data.margin} pts)<br><br>${rows}<br><br>`+
+      `<em>${data.analysis}</em>`;
+    showToast(`Prompt ${data.winner} gana`,'success');
+  }catch(e){
+    const sa=scorePrompt(a),sb=scorePrompt(b);
+    const avg=s=>Math.round((s.clarity+s.context+s.precision+s.structure+s.detail)/5);
+    const avgA=avg(sa),avgB=avg(sb),winner=avgA>=avgB?'A':'B';
+    res.innerHTML=`<strong>🅰️ A: ${avgA}/100</strong> | <strong>🅱️ B: ${avgB}/100</strong><br>Ganador: Prompt ${winner}<br><em style="color:var(--text3)">(análisis local — conectá el servidor para análisis IA)</em>`;
+    showToast(`Prompt ${winner} gana`,'success');
+  }finally{setLoading(btn,false);}
+}
+
+// ─── GENERATOR (IA real) ──────────────────────────────────────────────────
+async function generatePrompts(){
+  const goal=document.getElementById('genGoal').value.trim();
+  if(!goal)return showToast('Describí tu objetivo primero','error');
+  const tone=document.getElementById('genTone').value;
+  const model=document.getElementById('genModel').value;
+  const btn=document.querySelector('#generator .btn-primary');
+  setLoading(btn,true);
+  const container=document.getElementById('genResults');
+  container.innerHTML='<div style="text-align:center;padding:2rem;color:var(--text3)">⏳ Generando 3 versiones con Gemini...</div>';
+  try{
+    const data=await apiPost('/api/ai/generate',{goal,tone,model_target:model});
+    container.innerHTML='';
+    [{key:'basic',label:'Básico',cls:'level-basic'},{key:'professional',label:'Profesional',cls:'level-pro'},{key:'expert',label:'Experto',cls:'level-expert'}].forEach(({key,label,cls},i)=>{
+      const txt=data[key]||'';
+      const card=document.createElement('div');
+      card.className='gen-card';
+      card.innerHTML=`
+        <div class="gen-card-header">
+          <span class="gen-card-level ${cls}">Versión ${label}</span>
+          <button class="gen-copy-btn" onclick="copyRaw(${JSON.stringify(txt)})">📋 Copiar</button>
+        </div>
+        <div class="gen-card-text">${txt.replace(/\n/g,'<br>')}</div>`;
+      container.appendChild(card);
+      setTimeout(()=>card.classList.add('visible'),i*200+100);
+    });
+    if(data.xp_earned&&APP.user){APP.xp+=data.xp_earned;updateNavAuth();}
+    showToast('¡3 versiones generadas con Gemini!','success');
+  }catch(e){
+    container.innerHTML=`<div style="color:#ef4444;text-align:center;padding:1rem">Error: ${e.message}</div>`;
+    showToast('Error: '+e.message,'error');
+  }finally{setLoading(btn,false);}
+}
+
+// ─── SIMULATOR ────────────────────────────────────────────────────────
+const simData={
+  marketing:{
+    icon:'📣',title:'Marketing — Content Creator',
+    context:'Trabajás para una startup de fintech que lanzará una app de ahorro para millennials. El CEO quiere una campaña en redes sociales para el lanzamiento.',
+    challenges:[
+      {q:'Creá un prompt para generar 5 ideas de contenido para Instagram que conecten emocionalmente con millennials que quieren ahorrar.',
+       tip:'Incluí: identidad de marca, tono de voz, 2-3 ejemplos del estilo visual y métricas de éxito.',
+       feedback:'Un prompt experto de contenido define: el tono de voz, la paleta emocional, ejemplos de estilo y el objetivo de conversión.'},
+      {q:'Generá un prompt para escribir el copy de un anuncio pago en LinkedIn dirigido a jóvenes profesionales de 25-35 años.',
+       tip:'Siempre incluir: CTA, propuesta de valor única y el pain point específico del usuario.',
+       feedback:'Los prompts de copy efectivos incluyen el CTA, la propuesta de valor única y el dolor específico que resuelve el producto.'},
+      {q:'Creá un prompt para diseñar una estrategia de email marketing de 5 pasos para el lanzamiento de la app.',
+       tip:'Define la secuencia: teaser → pre-lanzamiento → lanzamiento → follow-up → upsell.',
+       feedback:'Un prompt de email marketing debe especificar la secuencia, el tono, los segmentos de audiencia y los KPIs de éxito.'},
+    ]
+  },
+  dev:{
+    icon:'💻',title:'Desarrollo — Full-Stack Dev',
+    context:'Estás en un equipo que construye una plataforma SaaS. Tu PM te pidió acelerar el proceso de code review y documentación con IA.',
+    challenges:[
+      {q:'Creá un prompt para que la IA revise tu código y encuentre posibles bugs, problemas de performance y mejoras de legibilidad.',
+       tip:'Incluí: lenguaje/framework, estándares del equipo, si hay tests, nivel de detalle esperado.',
+       feedback:'Un prompt de code review efectivo incluye el lenguaje, los estándares del equipo, si hay tests y el nivel de detalle esperado.'},
+      {q:'Diseñá un prompt para que la IA genere documentación técnica de una función a partir del código fuente.',
+       tip:'Especificá: público (junior/senior), formato (JSDoc, Markdown) y si querés ejemplos de uso.',
+       feedback:'Agregá: público objetivo, formato de documentación y si querés incluir ejemplos de uso.'},
+      {q:'Creá un prompt para que la IA te ayude a diseñar la arquitectura de una nueva feature del producto.',
+       tip:'Define: objetivo de la feature, restricciones técnicas y tecnologías del stack actual.',
+       feedback:'Un prompt de arquitectura debe incluir el contexto del sistema actual, las restricciones y los trade-offs a considerar.'},
+    ]
+  },
+  design:{
+    icon:'🎨',title:'Diseño — UX Designer',
+    context:'Estás diseñando la experiencia de usuario de una app de delivery de comida saludable. Necesitás validar ideas rápidamente.',
+    challenges:[
+      {q:'Creá un prompt para generar 10 ideas de mejora para el flujo de onboarding de una app de delivery.',
+       tip:'Siempre incluir: usuario objetivo, dispositivo, métricas actuales y objetivo de mejora específico.',
+       feedback:'Los prompts de UX deben incluir el usuario objetivo, el dispositivo, las métricas actuales y el objetivo de mejora.'},
+      {q:'Diseñá un prompt para evaluar si tu flujo actual cumple los principios de usabilidad de Nielsen.',
+       tip:'Especificá qué principios querés evaluar y el formato del feedback esperado.',
+       feedback:'Un prompt de evaluación UX debe referenciar los criterios específicos y el formato del output esperado.'},
+    ]
+  },
+  data:{
+    icon:'📊',title:'Data — Analista',
+    context:'Tu empresa quiere entender mejor el comportamiento de sus clientes. Tenés acceso a datos de compras, sesiones y soporte.',
+    challenges:[
+      {q:'Creá un prompt para que la IA te ayude a identificar patrones de churn en los datos de clientes.',
+       tip:'Incluí: estructura del dataset, columnas disponibles, hipótesis inicial y formato del output.',
+       feedback:'Un prompt de análisis incluye la estructura del dataset, las columnas disponibles, la hipótesis inicial y el formato del output.'},
+      {q:'Generá un prompt para crear un informe ejecutivo de ventas a partir de datos en bruto.',
+       tip:'Define: audiencia (CEO, equipo de ventas), período de análisis y KPIs prioritarios.',
+       feedback:'Los prompts de informes deben especificar la audiencia, el nivel de detalle y los KPIs más importantes para el negocio.'},
+    ]
+  },
+  support:{
+    icon:'🎧',title:'Soporte — Customer Success',
+    context:'Manejás el soporte de una plataforma de e-commerce con 50.000 usuarios activos. Querés usar IA para mejorar la calidad y velocidad de respuestas.',
+    challenges:[
+      {q:'Creá un prompt para que la IA genere respuestas empáticas y solucionadoras para quejas de clientes sobre retrasos en envíos.',
+       tip:'Define: tono (empático/formal), límite de caracteres, si incluir compensación y criterio de escalamiento.',
+       feedback:'Los prompts de soporte efectivos definen el tono, el límite de caracteres, la política de compensación y el escalamiento.'},
+      {q:'Diseñá un prompt para crear una base de preguntas frecuentes (FAQ) a partir de tickets de soporte pasados.',
+       tip:'Especificá el formato de la FAQ, el nivel de detalle y si querés agrupar por categorías.',
+       feedback:'Un prompt de FAQ debe indicar el formato de salida, la agrupación por categorías y el nivel de detalle técnico esperado.'},
+    ]
+  }
+};
+
+function selectJob(job,el){
+  document.querySelectorAll('.sim-job-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  APP.currentJob=job;APP.currentChallenge=0;
+  loadScenario();
+}
+function loadScenario(){
+  const d=simData[APP.currentJob];
+  const ch=d.challenges[APP.currentChallenge%d.challenges.length];
+  const idx=(APP.currentChallenge%d.challenges.length)+1;
+  const total=d.challenges.length;
+  document.getElementById('simScenario').classList.add('active');
+  document.getElementById('simTitle').innerHTML=`${d.icon} ${d.title} <span style="font-size:.78rem;color:var(--text3);font-weight:400">Desafío ${idx}/${total}</span>`;
+  document.getElementById('simContext').textContent=d.context;
+  document.getElementById('simChallenge').textContent=ch.q;
+  document.getElementById('simAnswer').value='';
+  document.getElementById('simFeedback').classList.remove('show');
+  let tipEl=document.getElementById('simTip');
+  if(!tipEl){
+    tipEl=document.createElement('p');tipEl.id='simTip';
+    tipEl.style.cssText='font-size:.8rem;color:var(--cyan2);margin-bottom:.8rem;padding:.5rem .9rem;background:rgba(6,182,212,.08);border-radius:6px';
+    document.getElementById('simChallenge').after(tipEl);
+  }
+  tipEl.textContent='💡 Pista: '+ch.tip;
+}
+async function submitSim(){
+  const ans=document.getElementById('simAnswer').value.trim();
+  if(!ans)return showToast('Escribí tu prompt primero','error');
+  const d=simData[APP.currentJob];
+  const ch=d.challenges[APP.currentChallenge%d.challenges.length];
+  const btn=document.querySelector('#simulator .btn-primary');
+  setLoading(btn,true);
+  try{
+    const data=await apiPost('/api/ai/simulate',{job:APP.currentJob,challenge:ch.q,context:d.context,answer:ans});
+    const fb=document.getElementById('simFeedback');
+    const score=data.scores||{};
+    const overall=data.overall||60;
+    const labels={clarity:'Claridad',context:'Contexto',precision:'Precisión',structure:'Estructura',detail:'Detalle'};
+    fb.innerHTML=`
+      <strong>📋 Feedback IA:</strong><br>${data.feedback||''}<br><br>
+      ${data.what_worked?`<strong>✅ Qué funcionó:</strong> ${data.what_worked}<br><br>`:''}
+      ${data.what_to_improve?`<strong>💡 Qué mejorar:</strong> ${data.what_to_improve}<br><br>`:''}
+      <strong>Tu puntuación: ${overall}/100</strong> — ${overall>=80?'🏆 ¡Excelente!':overall>=60?'⚡ Buen intento.':'📈 Seguí practicando.'}<br><br>
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:.5rem;margin-top:.5rem">
+        ${Object.entries(score).map(([k,v])=>`<div style="text-align:center;background:var(--bg4,#1a1a2e);border-radius:8px;padding:.5rem">
+          <div style="font-size:1.1rem;font-weight:700;color:${v>=70?'var(--green)':v>=40?'var(--orange)':'#ef4444'}">${v}</div>
+          <div style="font-size:.68rem;color:var(--text3)">${labels[k]||k}</div>
+        </div>`).join('')}
+      </div>
+      ${data.expert_version?`<br><strong>💎 Versión experta:</strong><br><em style="color:var(--text2)">${data.expert_version}</em>`:''}`;
+    fb.classList.add('show');
+    if(data.xp_earned){APP.xp+=data.xp_earned;updateNavAuth();showToast(`+${data.xp_earned} XP ganados`,'success');}
+  }catch(e){
+    const score=scorePrompt(ans);
+    const avg=Math.round((score.clarity+score.context+score.precision+score.structure+score.detail)/5);
+    const xpEarned=avg>=70?100:avg>=50?50:25;
+    APP.xp+=xpEarned;updateNavAuth();
+    const fb=document.getElementById('simFeedback');
+    fb.innerHTML=`<strong>Puntuación: ${avg}/100</strong><br>+${xpEarned} XP<br><em style="color:var(--text3)">(Iniciá el servidor para feedback detallado con IA)</em>`;
+    fb.classList.add('show');
+    showToast(`+${xpEarned} XP`,'success');
+  }finally{setLoading(btn,false);}
+}
+function nextScenario(){
+  if(!APP.currentJob)return showToast('Seleccioná un rol primero','error');
+  APP.currentChallenge++;
+  loadScenario();
+  showToast('Nuevo desafío cargado','info');
+}
+function startLevel(n){
+  const names=['','Primeros Pasos','Ganando Tracción','Prompt Engineering','Agentes y Sistemas'];
+  showToast(`Iniciando Nivel ${n<10?'0'+n:n}: ${names[n]||''} — ¡Vamos!`,'success');
+  document.getElementById('simulator').scrollIntoView({behavior:'smooth'});
+}
+
+// ─── LIBRARY ──────────────────────────────────────────────────────────
+const promptLibrary=[
+  {cat:'productividad',title:'Resumir reuniones',text:'Actuá como asistente ejecutivo. Resumí esta transcripción de reunión en: 1) Decisiones tomadas 2) Próximos pasos con responsable y fecha 3) Puntos pendientes.',uses:3420,date:5},
+  {cat:'marketing',title:'Copy para redes sociales',text:'Sos copywriter experto. Creá 5 variaciones de copy para [producto] en tono [casual/profesional]. Cada una con hook, cuerpo y CTA. Máximo 150 caracteres.',uses:2890,date:3},
+  {cat:'programacion',title:'Code review completo',text:'Revisá este código como senior developer. Identificá: bugs, problemas de performance, mejoras de legibilidad y violaciones de principios SOLID. Sé específico y priorizá cada issue.',uses:4100,date:4},
+  {cat:'estudio',title:'Explicar conceptos complejos',text:'Explicame [concepto] como si tuviera 15 años. Usá analogías del mundo real, evitá jerga técnica y terminá con 3 preguntas de comprensión.',uses:1780,date:2},
+  {cat:'negocios',title:'Análisis FODA rápido',text:'Hacé un análisis FODA de [empresa/producto] basado en: [info]. Sé específico y accionable. Para cada punto incluí una recomendación estratégica.',uses:2100,date:6},
+  {cat:'diseño',title:'Brief de diseño',text:'Actuá como director creativo. Creá un brief completo para diseñar [pieza]. Incluí: objetivo, audiencia, tono, paleta sugerida, referencias de estilo y métricas de éxito.',uses:980,date:1},
+  {cat:'escritura',title:'Mejorar texto existente',text:'Mejorá el siguiente texto manteniendo el mensaje principal pero haciéndolo más claro, conciso y persuasivo. Señalá los cambios principales y el porqué.',uses:3600,date:7},
+  {cat:'marketing',title:'Email de ventas B2B',text:'Sos experto en email marketing B2B. Escribí un email de ventas para [producto] dirigido a [cargo]. Hook en el asunto, valor en el primer párrafo, CTA claro al final.',uses:2400,date:9},
+  {cat:'programacion',title:'Generar tests unitarios',text:'Generá tests unitarios completos para la siguiente función. Incluí casos felices, casos límite y casos de error. Usá [framework de testing].',uses:3800,date:10},
+  {cat:'productividad',title:'Plan de proyecto',text:'Creá un plan de proyecto para [objetivo] en [timeframe]. Incluí: fases, hitos, dependencias, riesgos principales y cómo mitigarlos.',uses:1900,date:8},
+  {cat:'estudio',title:'Crear flashcards',text:'Creá 10 flashcards del siguiente contenido en formato Pregunta | Respuesta. Las preguntas deben testear comprensión profunda, no solo memoria.',uses:2200,date:11},
+  {cat:'negocios',title:'Propuesta comercial',text:'Redactá una propuesta comercial para [cliente] que necesita [servicio]. Incluí: propuesta de valor, metodología, entregables, timeline y precio en tabla.',uses:1650,date:12},
+  {cat:'productividad',title:'Email profesional',text:'Redactá un email profesional para [objetivo]. Tono: formal pero cercano. Incluí: asunto impactante, contexto en 1 línea, solicitud clara y próximo paso.',uses:2750,date:13},
+  {cat:'marketing',title:'Estrategia de contenido mensual',text:'Actuá como estratega de contenidos. Creá un calendario mensual para [marca]. Incluí: canal, formato, tema, objetivo y CTA para cada pieza.',uses:1890,date:14},
+  {cat:'programacion',title:'Arquitectura de sistema',text:'Actuá como arquitecto de software senior. Diseñá la arquitectura para [sistema]. Incluí: componentes principales, flujo de datos, tecnologías recomendadas y trade-offs de cada decisión.',uses:2950,date:15},
+  {cat:'diseño',title:'Feedback de diseño UX',text:'Evaluá este diseño como experto en UX. Analizá: usabilidad, jerarquía visual, consistencia, accesibilidad y propuesta de valor. Sé específico y accionable.',uses:1450,date:16},
+  {cat:'escritura',title:'Script para video',text:'Escribí un script de [duración] minutos para un video sobre [tema]. Incluí: hook en los primeros 5 segundos, desarrollo con ejemplos y CTA al final.',uses:2100,date:17},
+  {cat:'estudio',title:'Mapa conceptual textual',text:'Creá un mapa conceptual de [tema]. Incluí: concepto central, 5-7 ramas principales, sub-conceptos y conexiones entre ideas.',uses:1320,date:18},
+];
+
+function getSortedLibrary(items){
+  const sort=APP.libSort;
+  if(sort==='popular')return[...items].sort((a,b)=>b.uses-a.uses);
+  if(sort==='new')return[...items].sort((a,b)=>b.date-a.date);
+  if(sort==='saved')return[...items].sort((a,b)=>(b.uses*.7)-(a.uses*.7));
+  return items;
+}
+function renderLibrary(){
+  const grid=document.getElementById('libGrid');
+  let items=promptLibrary.filter(p=>{
+    const matchCat=APP.libFilter==='all'||p.cat===APP.libFilter;
+    const q=APP.libSearch;
+    const matchSearch=!q||p.title.toLowerCase().includes(q)||p.text.toLowerCase().includes(q)||p.cat.toLowerCase().includes(q);
+    return matchCat&&matchSearch;
+  });
+  items=getSortedLibrary(items);
+  if(!items.length){
+    grid.innerHTML='<p style="color:var(--text3);grid-column:1/-1;text-align:center;padding:2rem">No se encontraron prompts para tu búsqueda.</p>';
+    return;
+  }
+  grid.innerHTML=items.map(p=>`
+    <div class="lib-card">
+      <div class="lib-card-cat">${p.cat}</div>
+      <div class="lib-card-title">${p.title}</div>
+      <div class="lib-card-text">${p.text}</div>
+      <div class="lib-card-footer">
+        <span class="lib-card-uses">🔥 ${p.uses.toLocaleString()} usos</span>
+        <button class="lib-card-copy" onclick="copyRaw(${JSON.stringify(p.text)})">📋 Copiar</button>
+      </div>
+    </div>`).join('');
+}
+function filterCat(cat,el){
+  document.querySelectorAll('.lib-cat').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');APP.libFilter=cat;renderLibrary();
+}
+function filterLibrary(){
+  APP.libSearch=document.getElementById('libSearch').value.toLowerCase();
+  APP.libSort=document.getElementById('libSort').value;
+  renderLibrary();
+}
+
+// ─── COMPARADOR ───────────────────────────────────────────────────────
+function renderScoreRow(containerId,scores){
+  const c=document.getElementById(containerId);
+  const labels={clarity:'Claridad',context:'Contexto',precision:'Precisión',structure:'Estructura',detail:'Detalle'};
+  c.innerHTML=Object.entries(scores).map(([k,v])=>`
+    <div class="comp-score-item">
+      <div class="comp-score-num" style="color:${v>=70?'var(--green)':v>=40?'var(--orange)':'#ef4444'}">${v}</div>
+      <div class="comp-score-lbl">${labels[k]||k}</div>
+    </div>`).join('');
+}
+function runComparator(){
+  const before=document.getElementById('compBefore').value.trim();
+  const after=document.getElementById('compAfter').value.trim();
+  if(!before||!after)return showToast('Completá ambos campos','error');
+  renderScoreRow('compBeforeScores',scorePrompt(before));
+  renderScoreRow('compAfterScores',scorePrompt(after));
+  showToast('Comparación lista','success');
+}
+
+// ─── COMUNIDAD ────────────────────────────────────────────────────────
+const communityData=[
+  {cat:'productividad',catCls:'cat-prod',title:'Sistema de gestión de tareas con IA',desc:'Automatizá tu bandeja de entrada, priorización de tareas y resúmenes diarios con un único sistema de prompts.',saves:4200,time:'3 horas/semana',trending:true},
+  {cat:'marketing',catCls:'cat-mkt',title:'Pipeline de contenido para LinkedIn',desc:'Genera 30 posts al mes con una sola sesión de trabajo. Ideas, redacción y programación automatizadas.',saves:3800,time:'5 horas/semana',trending:true},
+  {cat:'programacion',catCls:'cat-dev',title:'Dev workflow full-stack con Claude',desc:'Desde el diseño hasta el deploy: arquitectura, código, tests y documentación generados en el orden correcto.',saves:5100,time:'8 horas/semana',trending:false},
+  {cat:'estudio',catCls:'cat-estudio',title:'Sistema de aprendizaje acelerado',desc:'Transforma cualquier material en flashcards, resúmenes, quiz y plan de repaso espaciado automáticamente.',saves:2900,time:'4 horas/semana',trending:true},
+  {cat:'marketing',catCls:'cat-mkt',title:'Estrategia de email marketing',desc:'Secuencias de bienvenida, nurturing y ventas escritas por IA y personalizadas por segmento de audiencia.',saves:3200,time:'6 horas/semana',trending:false},
+  {cat:'productividad',catCls:'cat-prod',title:'Agente de atención al cliente',desc:'Sistema multi-prompt para responder FAQs, escalar tickets y mantener tono consistente en todos los canales.',saves:4600,time:'10 horas/semana',trending:true},
+];
+function renderCommunity(){
+  const grid = document.getElementById('commGrid');
+  grid.innerHTML = communityData.map((w,i)=>`
+    <div class="comm-card" style="opacity:0;transform:translateY(28px)">
+      <div class="comm-card-top">
+        <span class="comm-cat-tag ${w.catCls}">${w.cat}</span>
+        ${w.trending?'<span class="comm-trending">↑ Trending</span>':''}
+      </div>
+      <div class="comm-title">${w.title}</div>
+      <div class="comm-desc">${w.desc}</div>
+      <div class="comm-meta">
+        <span class="comm-saves">♥ ${w.saves.toLocaleString()} · Ahorra ${w.time}</span>
+        <button class="like-btn ${APP.likes.has(i)?'liked':''}" onclick="toggleLike(${i},this)">
+          ${APP.likes.has(i)?'♥ Guardado':'+ Guardar'}
+        </button>
+      </div>
+    </div>`).join('');
+
+  // Stagger animation via IntersectionObserver — works with dynamic content
+  const cards = Array.from(grid.children);
+  const SPRING = 'cubic-bezier(0.16, 1, 0.3, 1)';
+  cards.forEach((card, i) => {
+    card.style.transition = `opacity 0.6s ${SPRING} ${i*90}ms, transform 0.6s ${SPRING} ${i*90}ms`;
+  });
+
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if(e.isIntersecting){
+        cards.forEach(card => {
+          card.style.opacity = '1';
+          card.style.transform = 'translateY(0)';
+        });
+        obs.disconnect();
+      }
+    });
+  }, { threshold: 0.05, rootMargin: '0px 0px -40px 0px' });
+
+  obs.observe(grid);
+}
+async function toggleLike(i,btn){
+  if(!APP.user){showToast('Iniciá sesión para guardar workflows','info');openModal('login');return;}
+  try{
+    const data=await apiPost('/api/community/like',{workflow_id:i});
+    if(data.liked){APP.likes.add(i);showToast('¡Guardado en tu colección!','success');}
+    else{APP.likes.delete(i);showToast('Quitado de guardados','info');}
+    btn.className=`like-btn ${APP.likes.has(i)?'liked':''}`;
+    btn.innerHTML=`${APP.likes.has(i)?'❤️':'🤍'} ${APP.likes.has(i)?'Guardado':'Guardar'}`;
+  }catch(e){showToast('Error: '+e.message,'error');}
+}
+
+// ─── DASHBOARD / GAMIFICATION ─────────────────────────────────────────
+function initDashboard(){
+  const nextLevelXP=APP.level*1000;
+  const prevLevelXP=(APP.level-1)*1000;
+  const progress=Math.min(100,Math.round(((APP.xp-prevLevelXP)/Math.max(1,nextLevelXP-prevLevelXP))*100));
+  const levelNames=['','Principiante','Aprendiz','Intermedio','Avanzado','Experto','Maestro','Pro','Elite','Legend','IA Master'];
+
+  // Level badge
+  const lvlEl=document.getElementById('userLevel');
+  if(lvlEl)lvlEl.textContent=APP.level;
+  const lvlBadge=document.querySelector('.level-badge-big div');
+  if(lvlBadge){
+    const divs=lvlBadge.querySelectorAll('div');
+    if(divs[0])divs[0].textContent=levelNames[APP.level]||'Experto';
+    if(divs[1])divs[1].textContent=`${APP.xp.toLocaleString()} XP acumulados`;
+  }
+
+  // XP bar
+  setTimeout(()=>{
+    const xpBar=document.getElementById('xpBar');
+    if(xpBar)xpBar.style.width=progress+'%';
+  },600);
+  const xpInfo=document.querySelector('.xp-info');
+  if(xpInfo)xpInfo.innerHTML=`<span>${APP.xp.toLocaleString()} XP</span><span>${nextLevelXP.toLocaleString()} XP</span>`;
+
+  // Streak
+  const streakEl=document.getElementById('streakRow');
+  if(streakEl){
+    streakEl.innerHTML='';
+    for(let i=0;i<21;i++){
+      const d=document.createElement('div');
+      d.className=`streak-day${i<APP.streak?' done':i===APP.streak?' today':''}`;
+      d.textContent=i<APP.streak?'✓':i===APP.streak?'🔥':'';
+      streakEl.appendChild(d);
+    }
+  }
+  const sc=document.getElementById('streakCount');
+  if(sc)sc.textContent=APP.streak;
+
+  // Badges — se desbloquean con XP/nivel real
+  const badges=[
+    {e:'🎯',n:'Primer prompt',locked:APP.xp<20},
+    {e:'🔥',n:'7 días seguidos',locked:APP.streak<7},
+    {e:'⚡',n:'Speed learner',locked:APP.xp<200},
+    {e:'🚀',n:'Nivel 3',locked:APP.level<3},
+    {e:'📚',n:'100 prompts',locked:APP.xp<1000},
+    {e:'🏆',n:'Top 10%',locked:true},
+    {e:'💎',n:'Experto',locked:APP.level<5},
+    {e:'🌟',n:'Maestro IA',locked:APP.level<8},
+  ];
+  const badgesGrid=document.getElementById('badgesGrid');
+  if(badgesGrid)badgesGrid.innerHTML=badges.map(b=>`
+    <div class="badge-item ${b.locked?'locked':''}" title="${b.n}" onclick="badgeClick('${b.n}',${b.locked})">
+      <span class="badge-emoji">${b.e}</span>
+      <span class="badge-name">${b.n}</span>
+    </div>`).join('');
+
+  // Daily challenges
+  const challengesList=[
+    {icon:'📝',name:'Analizá un prompt hoy',xp:50,section:'playground'},
+    {icon:'🎯',name:'Completá un simulador',xp:100,section:'simulator'},
+    {icon:'🔄',name:'Guardá un workflow',xp:75,section:'comunidad'},
+    {icon:'📚',name:'Copiá un prompt de la biblioteca',xp:25,section:'library'},
+  ];
+  const dc=document.getElementById('dailyChallenges');
+  if(dc)dc.innerHTML=challengesList.map((c,i)=>`
+    <div class="challenge-item">
+      <div class="challenge-left">
+        <span class="challenge-icon">${c.icon}</span>
+        <div>
+          <div class="challenge-name">${c.name}</div>
+          <div class="challenge-xp">+${c.xp} XP</div>
+        </div>
+      </div>
+      <button class="challenge-btn ${APP.challengesDone.has(i)?'done':''}"
+              onclick="doChallenge(${i},'${c.section}',${c.xp},this)">
+        ${APP.challengesDone.has(i)?'✓ Hecho':'Iniciar'}
+      </button>
+    </div>`).join('');
+
+  // Skill tree — se desbloquea con nivel real
+  const skills=[
+    {icon:'🌱',name:'Fundamentos de IA',req:'Completado',status:'unlocked'},
+    {icon:'✍️',name:'Prompt Básico',req:'Nivel 1+',status:APP.xp>=20?'unlocked':'locked'},
+    {icon:'⚡',name:'Prompt Intermedio',req:'Nivel 2+',status:APP.level>=2?'unlocked':'locked'},
+    {icon:'🧠',name:'Chain of Thought',req:'Nivel 3+',status:APP.level>=3?'unlocked':'locked'},
+    {icon:'🤖',name:'Agentes Autónomos',req:'Nivel 5+',status:APP.level>=5?'unlocked':'locked'},
+  ];
+  const st=document.getElementById('skillTree');
+  if(st)st.innerHTML=skills.map(s=>`
+    <div class="skill-node ${s.status}" onclick="skillClick('${s.name}','${s.status}')">
+      <span class="skill-node-icon">${s.icon}</span>
+      <div>
+        <div class="skill-node-name">${s.name}</div>
+        <div class="skill-node-req">${s.req}</div>
+      </div>
+      <span class="skill-node-status" style="color:${s.status==='unlocked'?'var(--green)':'var(--text3)'}">
+        ${s.status==='unlocked'?'✓ Desbloqueado':'🔒 Bloqueado'}
+      </span>
+    </div>`).join('');
+}
+
+function badgeClick(name,locked){
+  if(locked)showToast(`Logro "${name}" bloqueado — seguí aprendiendo`,'info');
+  else showToast(`Lograste: "${name}" ✨`,'success');
+}
+async function doChallenge(i,section,xp,btn){
+  if(btn.classList.contains('done'))return;
+  if(APP.user){
+    try{
+      const data=await apiPost('/api/progress/challenge',{challenge_id:i,xp});
+      APP.xp=data.xp;APP.level=data.level;APP.challengesDone=new Set(data.challenges_done);
+      if(data.xp_earned>0)showToast(`Desafío completado — +${data.xp_earned} XP`,'success');
+    }catch{APP.challengesDone.add(i);APP.xp+=xp;showToast(`+${xp} XP`,'success');}
+  }else{
+    APP.challengesDone.add(i);APP.xp+=xp;
+    showToast(`+${xp} XP — Iniciá sesión para guardar tu progreso`,'info');
+  }
+  btn.classList.add('done');btn.textContent='✓ Hecho';
+  updateNavAuth();initDashboard();
+  const sec=document.getElementById(section);
+  if(sec)setTimeout(()=>sec.scrollIntoView({behavior:'smooth'}),700);
+}
+function skillClick(name,status){
+  if(status==='locked')showToast(`"${name}" se desbloquea al subir de nivel`,'info');
+  else{showToast(`Practicando: ${name}`,'success');document.getElementById('playground').scrollIntoView({behavior:'smooth'});}
+}
+
+// ─── PASSWORD UTILS ───────────────────────────────────────────────────
+function togglePwd(inputId,btn){
+  const input=document.getElementById(inputId);
+  if(input.type==='password'){input.type='text';btn.textContent='🙈';}
+  else{input.type='password';btn.textContent='👁';}
+}
+function checkPwdStrength(val){
+  const bar=document.getElementById('pwdStrengthBar');if(!bar)return;
+  let s=0;
+  if(val.length>=8)s+=25;if(val.length>=12)s+=25;
+  if(/[A-Z]/.test(val)&&/[a-z]/.test(val))s+=25;
+  if(/[0-9]/.test(val)||/[^A-Za-z0-9]/.test(val))s+=25;
+  const color=s<=25?'#ef4444':s<=50?'var(--orange)':s<=75?'var(--cyan)':'var(--green)';
+  bar.style.width=s+'%';bar.style.background=color;
+}
+
+// ─── MODALS ───────────────────────────────────────────────────────────
+function openModal(type){
+  const el=document.getElementById(`modal${type.charAt(0).toUpperCase()+type.slice(1)}`);
+  if(el){el.classList.add('open');document.body.style.overflow='hidden';}
+}
+function closeModal(type){
+  const el=document.getElementById(`modal${type.charAt(0).toUpperCase()+type.slice(1)}`);
+  if(el){el.classList.remove('open');document.body.style.overflow='';}
+}
+document.querySelectorAll('.modal-overlay').forEach(o=>{
+  o.addEventListener('click',function(e){
+    if(e.target===this){this.classList.remove('open');document.body.style.overflow='';}
+  });
+});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){document.querySelectorAll('.modal-overlay').forEach(o=>o.classList.remove('open'));document.body.style.overflow='';}
+});
+
+function showErr(id,show){const el=document.getElementById(id);if(el)el.classList[show?'add':'remove']('show');}
+function isValidEmail(e){return/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);}
+
+async function submitLogin(){
+  const email=document.getElementById('loginEmail').value.trim();
+  const pass=document.getElementById('loginPass').value;
+  showErr('loginEmailErr',!isValidEmail(email));
+  showErr('loginPassErr',!pass);
+  if(!isValidEmail(email)||!pass)return;
+  const btn=document.querySelector('#modalLogin .btn-primary');
+  setLoading(btn,true);
+  try{
+    const data=await apiPost('/api/auth/login',{email,password:pass});
+    setToken(data.token);
+    APP.user=data.user;APP.xp=data.user.xp||0;APP.level=data.user.level||1;APP.streak=data.user.streak||0;
+    APP.challengesDone=new Set(data.user.challenges_done||[]);
+    try{const likes=await apiGet('/api/community/likes');APP.likes=new Set(likes.likes||[]);}catch{}
+    closeModal('login');updateNavAuth();initDashboard();renderCommunity();
+    showToast(`¡Bienvenido de vuelta, ${data.user.name.split(' ')[0]}! 👋`,'success');
+  }catch(e){showToast(e.message,'error');}
+  finally{setLoading(btn,false);}
+}
+async function submitRegister(){
+  const name=document.getElementById('regName').value.trim();
+  const email=document.getElementById('regEmail').value.trim();
+  const pass=document.getElementById('regPass').value;
+  showErr('regNameErr',name.length<2);showErr('regEmailErr',!isValidEmail(email));showErr('regPassErr',pass.length<8);
+  if(name.length<2||!isValidEmail(email)||pass.length<8)return;
+  const btn=document.querySelector('#modalRegister .btn-primary');
+  setLoading(btn,true);
+  try{
+    const data=await apiPost('/api/auth/register',{name,email,password:pass});
+    setToken(data.token);
+    APP.user=data.user;APP.xp=0;APP.level=1;APP.streak=0;
+    APP.challengesDone=new Set();APP.likes=new Set();
+    closeModal('register');updateNavAuth();initDashboard();
+    showToast(`¡Bienvenido, ${name.split(' ')[0]}! Tu cuenta fue creada ✨`,'success');
+    setTimeout(()=>showToast('Completá tu primer desafío para ganar XP 🎯','info'),2000);
+  }catch(e){showToast(e.message,'error');}
+  finally{setLoading(btn,false);}
+}
+function socialLogin(provider){
+  showToast(`Login con ${provider} próximamente disponible 🔜`,'info');
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────
+renderLibrary();
+renderCommunity();
+initDashboard();
+tryAutoLogin();
+
+// Navbar scroll effect
+window.addEventListener('scroll',()=>{
+  document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 20);
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+.env
+leairning.db
+*.log
+__pycache__/
+*.pyc
+.DS_Store

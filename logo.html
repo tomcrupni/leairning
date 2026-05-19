@@ -1,0 +1,1502 @@
+from reportlab.lib.pagesizes import A4
+from reportlab.pdfgen import canvas
+from reportlab.lib.colors import HexColor, Color, white, black
+from reportlab.lib.units import mm
+import math
+ 
+W, H = A4  # 595 x 842
+ 
+# ── BRAND COLORS ──────────────────────────────────────────────────────────────
+BG       = HexColor("#080C10")
+BG2      = HexColor("#0D1117")
+SURFACE  = HexColor("#141C26")
+SURFACE2 = HexColor("#1A2535")
+BORDER   = HexColor("#1E2D3D")
+BORDER2  = HexColor("#263344")
+CYAN     = HexColor("#00D4C8")
+CYAN2    = HexColor("#00A89E")
+CYAN_DIM = HexColor("#061F1E")
+PURPLE   = HexColor("#7C6DF0")
+PURP_DIM = HexColor("#13112A")
+AMBER    = HexColor("#F0A832")
+AMB_DIM  = HexColor("#231808")
+GREEN    = HexColor("#3ECF8E")
+GRN_DIM  = HexColor("#081F15")
+RED      = HexColor("#F05C5C")
+TEXT     = HexColor("#E8EDF2")
+TEXT2    = HexColor("#8A9AB0")
+TEXT3    = HexColor("#4A5A70")
+WHITE    = HexColor("#FFFFFF")
+LIGHT_BG = HexColor("#F4F5F7")
+LIGHT_SRF= HexColor("#FFFFFF")
+ 
+def new_page(c):
+    c.showPage()
+    c.setPageSize(A4)
+ 
+def full_bg(c, color=BG):
+    c.setFillColor(color)
+    c.rect(0, 0, W, H, fill=1, stroke=0)
+ 
+def draw_grid(c, color=None, alpha=0.03):
+    if color is None:
+        color = CYAN
+    c.saveState()
+    c.setStrokeColor(color)
+    c.setLineWidth(0.4)
+    step = 30
+    for x in range(0, int(W)+step, step):
+        c.line(x, 0, x, H)
+    for y in range(0, int(H)+step, step):
+        c.line(0, y, W, y)
+    c.restoreState()
+ 
+def dot_grid(c, color=CYAN, spacing=24, dotsize=0.8):
+    c.saveState()
+    c.setFillColor(color)
+    for x in range(0, int(W)+spacing, spacing):
+        for y in range(0, int(H)+spacing, spacing):
+            c.circle(x, y, dotsize, fill=1, stroke=0)
+    c.restoreState()
+ 
+def label_tag(c, x, y, text, bg=CYAN, fg=BG, size=7.5):
+    c.setFont("Helvetica-Bold", size)
+    tw = c.stringWidth(text, "Helvetica-Bold", size)
+    pad = 5
+    c.setFillColor(bg)
+    c.roundRect(x, y-3, tw+pad*2, 14, 3, fill=1, stroke=0)
+    c.setFillColor(fg)
+    c.drawString(x+pad, y+3, text)
+ 
+def draw_logo_symbol(c, cx, cy, size=1.0, color=CYAN):
+    """Draw the LeAIrning logo mark - stylized 'L' + spark"""
+    s = size
+    c.saveState()
+    c.setFillColor(color)
+    # Outer hexagon-ish rounded square
+    c.setStrokeColor(color)
+    c.setLineWidth(2*s)
+    c.setFillColor(HexColor("#061F1E") if color == CYAN else HexColor("#FFFFFF"))
+    c.roundRect(cx - 18*s, cy - 18*s, 36*s, 36*s, 6*s, fill=1, stroke=1)
+    # "L" shape
+    c.setFillColor(color)
+    # vertical bar
+    c.rect(cx - 9*s, cy - 9*s, 5*s, 18*s, fill=1, stroke=0)
+    # horizontal bar
+    c.rect(cx - 9*s, cy - 9*s, 14*s, 5*s, fill=1, stroke=0)
+    # spark dot top right
+    c.circle(cx + 7*s, cy + 8*s, 3.5*s, fill=1, stroke=0)
+    c.restoreState()
+ 
+def draw_logo_text(c, x, y, size=28, color=TEXT):
+    """Draw 'LeAIrning' wordmark"""
+    c.saveState()
+    # "Le" normal weight
+    c.setFillColor(color)
+    c.setFont("Helvetica", size)
+    c.drawString(x, y, "Le")
+    le_w = c.stringWidth("Le", "Helvetica", size)
+    # "AI" bold cyan
+    c.setFillColor(CYAN)
+    c.setFont("Helvetica-Bold", size)
+    c.drawString(x + le_w, y, "AI")
+    ai_w = c.stringWidth("AI", "Helvetica-Bold", size)
+    # "rning" normal weight
+    c.setFillColor(color)
+    c.setFont("Helvetica", size)
+    c.drawString(x + le_w + ai_w, y, "rning")
+    c.restoreState()
+ 
+def page_number_label(c, n, total=12):
+    c.saveState()
+    c.setFillColor(TEXT3)
+    c.setFont("Courier", 8)
+    c.drawString(W/2 - 12, 18, f"{n:02d} / {total}")
+    c.restoreState()
+ 
+def section_divider(c, y, color=CYAN):
+    c.setStrokeColor(color)
+    c.setLineWidth(1)
+    c.line(40, y, W-40, y)
+ 
+# ══════════════════════════════════════════════════════════════════════════════
+#  PAGE 1 — COVER
+# ══════════════════════════════════════════════════════════════════════════════
+def page_cover(c):
+    full_bg(c)
+    # Subtle dot grid
+    c.saveState()
+    c.setFillColor(HexColor("#0D1E1D"))
+    for x in range(0, int(W)+30, 30):
+        for y in range(0, int(H)+30, 30):
+            c.circle(x, y, 0.7, fill=1, stroke=0)
+    c.restoreState()
+ 
+    # Top accent line
+    c.setStrokeColor(CYAN)
+    c.setLineWidth(2)
+    c.line(0, H-3, W, H-3)
+ 
+    # Large decorative circle
+    c.saveState()
+    c.setStrokeColor(HexColor("#0D2A29"))
+    c.setLineWidth(1)
+    c.circle(W + 60, H/2 + 80, 280, stroke=1, fill=0)
+    c.circle(W + 60, H/2 + 80, 200, stroke=1, fill=0)
+    c.circle(W + 60, H/2 + 80, 130, stroke=1, fill=0)
+    c.restoreState()
+ 
+    # Logo mark large
+    draw_logo_symbol(c, 70, H - 100, size=1.6)
+ 
+    # Brand name
+    c.setFont("Helvetica-Bold", 11)
+    c.setFillColor(TEXT3)
+    c.drawString(40, H - 140, "LeAIrning")
+ 
+    # Main headline
+    c.setFont("Helvetica-Bold", 52)
+    c.setFillColor(TEXT)
+    c.drawString(40, H - 260, "Brand")
+    c.drawString(40, H - 320, "Identity")
+    c.setFillColor(CYAN)
+    c.drawString(40, H - 380, "Guidelines")
+ 
+    # Version tag
+    label_tag(c, 40, H - 430, "VERSION 1.0 · 2026", CYAN, BG)
+ 
+    # Divider
+    c.setStrokeColor(BORDER2)
+    c.setLineWidth(1)
+    c.line(40, H - 460, W - 40, H - 460)
+ 
+    # Description
+    c.setFont("Helvetica", 11)
+    c.setFillColor(TEXT2)
+    lines = [
+        "Este documento define los estándares visuales de LeAIrning.",
+        "Incluye logotipo, paleta de color, tipografía, elementos",
+        "gráficos y normas de uso para garantizar consistencia",
+        "en todas las aplicaciones de la marca."
+    ]
+    for i, line in enumerate(lines):
+        c.drawString(40, H - 490 - i*18, line)
+ 
+    # Bottom section
+    c.setFillColor(SURFACE)
+    c.rect(0, 0, W, 80, fill=1, stroke=0)
+    c.setStrokeColor(BORDER)
+    c.setLineWidth(0.5)
+    c.line(0, 80, W, 80)
+ 
+    c.setFont("Helvetica-Bold", 9)
+    c.setFillColor(CYAN)
+    c.drawString(40, 52, "LeAIrning")
+    c.setFillColor(TEXT3)
+    c.setFont("Helvetica", 9)
+    c.drawString(40, 36, "La plataforma para dominar la inteligencia artificial")
+    c.setFont("Courier", 8)
+    c.setFillColor(TEXT3)
+    c.drawRightString(W - 40, 36, "learni.ng")
+ 
+    # Side labels
+    c.saveState()
+    c.translate(W-20, H/2)
+    c.rotate(90)
+    c.setFont("Courier", 7.5)
+    c.setFillColor(TEXT3)
+    c.drawCentredString(0, 0, "BRAND IDENTITY GUIDELINES · LEAIRNING · 2026")
+    c.restoreState()
+ 
+ 
+# ══════════════════════════════════════════════════════════════════════════════
+#  PAGE 2 — INDEX
+# ══════════════════════════════════════════════════════════════════════════════
+def page_index(c):
+    full_bg(c)
+    dot_grid(c, HexColor("#0D1E1D"), 28, 0.6)
+ 
+    c.setStrokeColor(CYAN)
+    c.setLineWidth(2)
+    c.line(0, H-3, W, H-3)
+ 
+    # Header
+    c.setFont("Courier", 9)
+    c.setFillColor(CYAN)
+    c.drawString(40, H-42, "// ÍNDICE")
+ 
+    c.setFont("Helvetica-Bold", 32)
+    c.setFillColor(TEXT)
+    c.drawString(40, H-82, "Contenido")
+ 
+    c.setStrokeColor(BORDER)
+    c.setLineWidth(0.5)
+    c.line(40, H-100, W-40, H-100)
+ 
+    items = [
+        ("01", "Logotipo",           "Construcción y proporciones del logo principal"),
+        ("02", "Variantes",          "Versiones positiva, negativa e inversiones"),
+        ("03", "Isotipo",            "Símbolo independiente y usos"),
+        ("04", "Paleta de color",    "Colores primarios, secundarios y sistemas"),
+        ("05", "Tipografía",         "Familias tipográficas y jerarquía"),
+        ("06", "Elementos visuales", "Grid, líneas, formas y patrones"),
+        ("07", "Texturas",           "Fondos, superficies y efectos gráficos"),
+        ("08", "Mockups",            "Aplicaciones en entornos reales"),
+        ("09", "Usos incorrectos",   "Prohibiciones y errores a evitar"),
+    ]
+ 
+    for i, (num, title, desc) in enumerate(items):
+        yy = H - 140 - i * 62
+        # Number
+        c.setFont("Courier", 10)
+        c.setFillColor(CYAN)
+        c.drawString(40, yy, num)
+        # Line
+        c.setStrokeColor(BORDER)
+        c.setLineWidth(0.5)
+        c.line(40, yy - 12, W - 40, yy - 12)
+        # Title
+        c.setFont("Helvetica-Bold", 16)
+        c.setFillColor(TEXT)
+        c.drawString(72, yy, title)
+        # Description
+        c.setFont("Helvetica", 10)
+        c.setFillColor(TEXT2)
+        c.drawString(72, yy - 18, desc)
+ 
+    page_number_label(c, 2)
+ 
+ 
+# ══════════════════════════════════════════════════════════════════════════════
+#  PAGE 3 — LOGOTIPO
+# ══════════════════════════════════════════════════════════════════════════════
+def page_logo(c):
+    full_bg(c)
+    dot_grid(c, HexColor("#0D1E1D"), 28, 0.6)
+    c.setStrokeColor(CYAN)
+    c.setLineWidth(2)
+    c.line(0, H-3, W, H-3)
+ 
+    c.setFont("Courier", 9)
+    c.setFillColor(CYAN)
+    c.drawString(40, H-42, "// 01 — LOGOTIPO")
+    c.setFont("Helvetica-Bold", 32)
+    c.setFillColor(TEXT)
+    c.drawString(40, H-80, "Logo principal")
+    c.setFont("Helvetica", 11)
+    c.setFillColor(TEXT2)
+    c.drawString(40, H-102, "Combinación de isotipo + wordmark. Versión principal para uso general.")
+ 
+    # Construction grid lines
+    c.saveState()
+    c.setStrokeColor(HexColor("#112233"))
+    c.setLineWidth(0.4)
+    for gx in range(40, int(W)-30, 15):
+        c.line(gx, H-200, gx, H-360)
+    for gy in range(int(H)-360, int(H)-199, 15):
+        c.line(40, gy, W-40, gy)
+    c.restoreState()
+ 
+    # Main logo on dark bg box
+    logo_box_y = H - 360
+    c.setFillColor(SURFACE)
+    c.roundRect(40, logo_box_y, W-80, 145, 10, fill=1, stroke=0)
+    c.setStrokeColor(BORDER2)
+    c.setLineWidth(0.5)
+    c.roundRect(40, logo_box_y, W-80, 145, 10, fill=0, stroke=1)
+ 
+    draw_logo_symbol(c, 135, logo_box_y + 72, size=2.2)
+    cx_text = 196
+    # "Le"
+    c.setFillColor(TEXT)
+    c.setFont("Helvetica", 40)
+    le_w = c.stringWidth("Le", "Helvetica", 40)
+    c.drawString(cx_text, logo_box_y + 52, "Le")
+    # "AI"
+    c.setFillColor(CYAN)
+    c.setFont("Helvetica-Bold", 40)
+    ai_w = c.stringWidth("AI", "Helvetica-Bold", 40)
+    c.drawString(cx_text + le_w, logo_box_y + 52, "AI")
+    # "rning"
+    c.setFillColor(TEXT)
+    c.setFont("Helvetica", 40)
+    c.drawString(cx_text + le_w + ai_w, logo_box_y + 52, "rning")
+    # tagline
+    c.setFillColor(TEXT3)
+    c.setFont("Courier", 9)
+    c.drawString(cx_text, logo_box_y + 32, "LEARN ARTIFICIAL INTELLIGENCE")
+ 
+    # Measurement annotations
+    c.saveState()
+    c.setStrokeColor(HexColor("#1A3344"))
+    c.setFillColor(HexColor("#1A3344"))
+    c.setLineWidth(0.5)
+    # Width arrow
+    c.line(196, logo_box_y + 12, 440, logo_box_y + 12)
+    c.setFont("Courier", 7)
+    c.setFillColor(TEXT3)
+    c.drawCentredString(318, logo_box_y + 5, "wordmark width")
+    c.restoreState()
+ 
+    # Clear space rule
+    yy = logo_box_y - 30
+    c.setFont("Courier", 9)
+    c.setFillColor(CYAN)
+    c.drawString(40, yy, "ESPACIO MÍNIMO DE PROTECCIÓN")
+    c.setFont("Helvetica", 10)
+    c.setFillColor(TEXT2)
+    c.drawString(40, yy - 16, "Siempre respetá un área libre equivalente a la altura de la 'A' del logotipo en todos sus lados.")
+ 
+    # Spacing example
+    safe_y = yy - 80
+    c.setFillColor(BG2)
+    c.roundRect(40, safe_y, W-80, 60, 8, fill=1, stroke=0)
+    c.setStrokeColor(HexColor("#1A3344"))
+    c.setLineWidth(0.5)
+    # dashed border simulation
+    c.setDash([4, 3])
+    c.roundRect(56, safe_y + 8, W-112, 44, 6, fill=0, stroke=1)
+    c.setDash([])
+    draw_logo_symbol(c, 110, safe_y+30, size=0.9)
+    c.setFont("Helvetica", 16)
+    c.setFillColor(TEXT)
+    le_w2 = c.stringWidth("Le", "Helvetica", 16)
+    c.drawString(138, safe_y + 22, "Le")
+    c.setFillColor(CYAN)
+    c.setFont("Helvetica-Bold", 16)
+    ai_w2 = c.stringWidth("AI", "Helvetica-Bold", 16)
+    c.drawString(138 + le_w2, safe_y + 22, "AI")
+    c.setFillColor(TEXT)
+    c.setFont("Helvetica", 16)
+    c.drawString(138 + le_w2 + ai_w2, safe_y + 22, "rning")
+    c.setFont("Courier", 7.5)
+    c.setFillColor(CYAN)
+    c.drawString(345, safe_y + 28, "← espacio protegido →")
+ 
+    # Min sizes
+    min_y = safe_y - 55
+    c.setFont("Courier", 9)
+    c.setFillColor(CYAN)
+    c.drawString(40, min_y, "TAMAÑO MÍNIMO")
+    sizes = [("Digital", "24px altura"), ("Impresión", "8mm altura"), ("Favicon", "16px isotipo")]
+    for i, (medium, sz) in enumerate(sizes):
+        xx = 40 + i * 170
+        c.setFillColor(SURFACE)
+        c.roundRect(xx, min_y-46, 155, 38, 6, fill=1, stroke=0)
+        c.setFont("Helvetica-Bold", 10)
+        c.setFillColor(TEXT)
+        c.drawString(xx+10, min_y-18, medium)
+        c.setFont("Courier", 9)
+        c.setFillColor(CYAN)
+        c.drawString(xx+10, min_y-34, sz)
+ 
+    page_number_label(c, 3)
+ 
+ 
+# ══════════════════════════════════════════════════════════════════════════════
+#  PAGE 4 — VARIANTES
+# ══════════════════════════════════════════════════════════════════════════════
+def page_variantes(c):
+    full_bg(c)
+    dot_grid(c, HexColor("#0D1E1D"), 28, 0.6)
+    c.setStrokeColor(CYAN)
+    c.setLineWidth(2)
+    c.line(0, H-3, W, H-3)
+ 
+    c.setFont("Courier", 9)
+    c.setFillColor(CYAN)
+    c.drawString(40, H-42, "// 02 — VARIANTES DE LOGO")
+    c.setFont("Helvetica-Bold", 32)
+    c.setFillColor(TEXT)
+    c.drawString(40, H-80, "Variantes")
+    c.setFont("Helvetica", 11)
+    c.setFillColor(TEXT2)
+    c.drawString(40, H-100, "Tres variantes oficiales para distintos contextos de aplicación.")
+ 
+    # ── POSITIVO (dark)
+    label_tag(c, 40, H-135, "VERSIÓN POSITIVA")
+    c.setFillColor(BG)
+    c.roundRect(40, H-280, W-80, 130, 10, fill=1, stroke=0)
+    c.setStrokeColor(BORDER2)
+    c.setLineWidth(0.5)
+    c.roundRect(40, H-280, W-80, 130, 10, fill=0, stroke=1)
+    # Logo
+    draw_logo_symbol(c, 130, H-215, size=2.0)
+    c.setFont("Helvetica", 36)
+    c.setFillColor(TEXT)
+    le_w = c.stringWidth("Le", "Helvetica", 36)
+    c.drawString(192, H-228, "Le")
+    c.setFont("Helvetica-Bold", 36)
+    c.setFillColor(CYAN)
+    ai_w = c.stringWidth("AI", "Helvetica-Bold", 36)
+    c.drawString(192+le_w, H-228, "AI")
+    c.setFont("Helvetica", 36)
+    c.setFillColor(TEXT)
+    c.drawString(192+le_w+ai_w, H-228, "rning")
+    label_tag(c, W-150, H-260, "USO PRINCIPAL", SURFACE2, TEXT2)
+ 
+    # ── NEGATIVO (light)
+    label_tag(c, 40, H-305, "VERSIÓN NEGATIVA")
+    c.setFillColor(LIGHT_BG)
+    c.roundRect(40, H-450, W-80, 130, 10, fill=1, stroke=0)
+    draw_logo_symbol(c, 130, H-385, size=2.0, color=HexColor("#080C10"))
+    c.setFont("Helvetica", 36)
+    c.setFillColor(HexColor("#080C10"))
+    le_w = c.stringWidth("Le", "Helvetica", 36)
+    c.drawString(192, H-398, "Le")
+    c.setFont("Helvetica-Bold", 36)
+    c.setFillColor(HexColor("#009990"))
+    ai_w = c.stringWidth("AI", "Helvetica-Bold", 36)
+    c.drawString(192+le_w, H-398, "AI")
+    c.setFont("Helvetica", 36)
+    c.setFillColor(HexColor("#080C10"))
+    c.drawString(192+le_w+ai_w, H-398, "rning")
+    label_tag(c, W-200, H-430, "FONDOS CLAROS", HexColor("#D0D5DB"), HexColor("#3A4A5A"))
+ 
+    # ── MONOCROMÁTICO
+    label_tag(c, 40, H-475, "VERSIÓN MONOCROMÁTICA")
+    c.setFillColor(HexColor("#0A0F14"))
+    c.roundRect(40, H-620, W-80, 130, 10, fill=1, stroke=0)
+    c.setStrokeColor(HexColor("#2A3A4A"))
+    c.setLineWidth(0.5)
+    c.roundRect(40, H-620, W-80, 130, 10, fill=0, stroke=1)
+    draw_logo_symbol(c, 130, H-555, size=2.0, color=WHITE)
+    c.setFont("Helvetica", 36)
+    c.setFillColor(WHITE)
+    le_w = c.stringWidth("Le", "Helvetica", 36)
+    c.drawString(192, H-568, "Le")
+    c.setFont("Helvetica-Bold", 36)
+    c.setFillColor(WHITE)
+    ai_w = c.stringWidth("AI", "Helvetica-Bold", 36)
+    c.drawString(192+le_w, H-568, "AI")
+    c.setFont("Helvetica", 36)
+    c.drawString(192+le_w+ai_w, H-568, "rning")
+    label_tag(c, W-230, H-600, "BLANCO / MONOCROMÁTICO", BORDER2, TEXT3)
+ 
+    # ── NOTA
+    c.setFillColor(CYAN_DIM)
+    c.roundRect(40, 40, W-80, 44, 8, fill=1, stroke=0)
+    c.setStrokeColor(HexColor("#0D3533"))
+    c.setLineWidth(0.5)
+    c.roundRect(40, 40, W-80, 44, 8, fill=0, stroke=1)
+    c.setFont("Courier", 8)
+    c.setFillColor(CYAN)
+    c.drawString(56, 72, "NOTA")
+    c.setFont("Helvetica", 9.5)
+    c.setFillColor(TEXT2)
+    c.drawString(88, 72, "Nunca alterés los colores fuera de estas tres variantes oficiales.")
+    c.drawString(56, 56, "Para aplicaciones especiales contactar al equipo de diseño.")
+ 
+    page_number_label(c, 4)
+ 
+ 
+# ══════════════════════════════════════════════════════════════════════════════
+#  PAGE 5 — ISOTIPO
+# ══════════════════════════════════════════════════════════════════════════════
+def page_isotipo(c):
+    full_bg(c)
+    dot_grid(c, HexColor("#0D1E1D"), 28, 0.6)
+    c.setStrokeColor(CYAN)
+    c.setLineWidth(2)
+    c.line(0, H-3, W, H-3)
+ 
+    c.setFont("Courier", 9)
+    c.setFillColor(CYAN)
+    c.drawString(40, H-42, "// 03 — ISOTIPO")
+    c.setFont("Helvetica-Bold", 32)
+    c.setFillColor(TEXT)
+    c.drawString(40, H-80, "Isotipo")
+    c.setFont("Helvetica", 11)
+    c.setFillColor(TEXT2)
+    c.drawString(40, H-100, "Símbolo gráfico independiente. Usalo sin el wordmark en contextos pequeños.")
+ 
+    # Large isotipo display
+    c.setFillColor(SURFACE)
+    c.roundRect(40, H-340, W-80, 220, 12, fill=1, stroke=0)
+    c.setStrokeColor(BORDER2)
+    c.setLineWidth(0.5)
+    c.roundRect(40, H-340, W-80, 220, 12, fill=0, stroke=1)
+    # Construction lines
+    c.saveState()
+    c.setStrokeColor(BORDER)
+    c.setLineWidth(0.3)
+    c.setDash([3,4])
+    cx = W/2
+    cy = H-230
+    c.circle(cx, cy, 72, stroke=1, fill=0)
+    c.circle(cx, cy, 52, stroke=1, fill=0)
+    c.line(cx-80, cy, cx+80, cy)
+    c.line(cx, cy-80, cx, cy+80)
+    c.setDash([])
+    c.restoreState()
+    # Symbol large
+    draw_logo_symbol(c, W/2, H-230, size=3.0)
+ 
+    # Size variations
+    sizes_y = H - 400
+    c.setFont("Courier", 9)
+    c.setFillColor(CYAN)
+    c.drawString(40, sizes_y, "ESCALAS DE USO")
+    scale_data = [(4.0, "128px"), (2.5, "64px"), (1.6, "40px"), (1.0, "24px"), (0.6, "16px")]
+    total_w = W - 80
+    step_x = total_w / len(scale_data)
+    for i, (sc, label) in enumerate(scale_data):
+        xx = 40 + i * step_x + step_x/2
+        c.setFillColor(SURFACE)
+        c.roundRect(xx - step_x/2 + 6, sizes_y - 110, step_x - 12, 90, 8, fill=1, stroke=0)
+        draw_logo_symbol(c, xx, sizes_y - 60, size=sc*0.5)
+        c.setFont("Courier", 8)
+        c.setFillColor(TEXT3)
+        c.drawCentredString(xx, sizes_y - 105, label)
+ 
+    # On different backgrounds
+    bg_test_y = sizes_y - 180
+    c.setFont("Courier", 9)
+    c.setFillColor(CYAN)
+    c.drawString(40, bg_test_y, "SOBRE FONDOS")
+    backgrounds = [BG, SURFACE, HexColor("#FFFFFF"), CYAN, PURPLE, AMBER]
+    icon_colors = [CYAN, CYAN, HexColor("#080C10"), HexColor("#080C10"), WHITE, HexColor("#080C10")]
+    labels_bg = ["#080C10", "#141C26", "#FFFFFF", "#00D4C8", "#7C6DF0", "#F0A832"]
+    bw = (W - 80) / len(backgrounds)
+    for i, (bg, ic, lb) in enumerate(zip(backgrounds, icon_colors, labels_bg)):
+        xx = 40 + i * bw
+        c.setFillColor(bg)
+        c.roundRect(xx+4, bg_test_y-100, bw-8, 82, 8, fill=1, stroke=0)
+        draw_logo_symbol(c, xx + bw/2, bg_test_y - 58, size=1.1, color=ic)
+        c.setFont("Courier", 6.5)
+        c.setFillColor(TEXT3)
+        c.drawCentredString(xx + bw/2, bg_test_y - 108, lb)
+ 
+    page_number_label(c, 5)
+ 
+ 
+# ══════════════════════════════════════════════════════════════════════════════
+#  PAGE 6 — PALETA DE COLOR
+# ══════════════════════════════════════════════════════════════════════════════
+def page_colores(c):
+    full_bg(c)
+    dot_grid(c, HexColor("#0D1E1D"), 28, 0.6)
+    c.setStrokeColor(CYAN)
+    c.setLineWidth(2)
+    c.line(0, H-3, W, H-3)
+ 
+    c.setFont("Courier", 9)
+    c.setFillColor(CYAN)
+    c.drawString(40, H-42, "// 04 — PALETA DE COLOR")
+    c.setFont("Helvetica-Bold", 32)
+    c.setFillColor(TEXT)
+    c.drawString(40, H-80, "Colores de marca")
+ 
+    # PRIMARY
+    c.setFont("Courier", 9)
+    c.setFillColor(CYAN)
+    c.drawString(40, H-112, "PRIMARIOS")
+ 
+    primary = [
+        ("#00D4C8", "Cyan",      "Principal",     CYAN,   BG,    "Acción, links, highlights"),
+        ("#080C10", "Obsidian",  "Fondo base",    BG,     CYAN,  "Background principal"),
+        ("#141C26", "Surface",   "Superficies",   SURFACE,TEXT2, "Cards, modales"),
+    ]
+    card_w = (W - 80 - 20) / 3
+    for i, (hex_, name, role, bg, fg, desc) in enumerate(primary):
+        xx = 40 + i * (card_w + 10)
+        yy = H - 220
+        # Large swatch
+        c.setFillColor(HexColor(hex_))
+        c.roundRect(xx, yy, card_w, 88, 8, fill=1, stroke=0)
+        # Hex label on swatch
+        c.setFont("Courier", 10)
+        c.setFillColor(fg)
+        c.drawString(xx+12, yy+56, hex_)
+        c.setFont("Helvetica-Bold", 13)
+        c.drawString(xx+12, yy+38, name)
+        c.setFont("Helvetica", 9)
+        c.drawString(xx+12, yy+22, role)
+        # Info below
+        c.setFillColor(SURFACE)
+        c.roundRect(xx, yy-52, card_w, 44, 0, fill=1, stroke=0)
+        c.setFont("Courier", 8)
+        c.setFillColor(CYAN)
+        c.drawString(xx+8, yy-18, "HEX  " + hex_)
+        c.setFillColor(TEXT3)
+        r = int(hex_[1:3],16); g = int(hex_[3:5],16); b = int(hex_[5:7],16)
+        c.drawString(xx+8, yy-30, f"RGB  {r}, {g}, {b}")
+        c.setFillColor(TEXT2)
+        c.setFont("Helvetica", 8.5)
+        c.drawString(xx+8, yy-44, desc)
+ 
+    # SECONDARY
+    c.setFont("Courier", 9)
+    c.setFillColor(CYAN)
+    c.drawString(40, H-295, "SECUNDARIOS")
+ 
+    secondary = [
+        ("#7C6DF0", "Electric Purple", PURPLE, WHITE),
+        ("#F0A832", "Golden Amber",    AMBER,  BG),
+        ("#3ECF8E", "Neon Green",      GREEN,  BG),
+        ("#F05C5C", "Alert Red",       RED,    WHITE),
+    ]
+    sec_w = (W - 80 - 30) / 4
+    for i, (hex_, name, bg, fg) in enumerate(secondary):
+        xx = 40 + i*(sec_w+10)
+        yy = H - 390
+        c.setFillColor(HexColor(hex_))
+        c.roundRect(xx, yy, sec_w, 70, 8, fill=1, stroke=0)
+        c.setFont("Courier", 9)
+        c.setFillColor(fg)
+        c.drawString(xx+8, yy+46, hex_)
+        c.setFont("Helvetica-Bold", 11)
+        c.drawString(xx+8, yy+28, name)
+        c.setFillColor(SURFACE)
+        c.roundRect(xx, yy-34, sec_w, 28, 0, fill=1, stroke=0)
+        c.setFont("Courier", 7.5)
+        c.setFillColor(TEXT3)
+        r = int(hex_[1:3],16); g = int(hex_[3:5],16); b = int(hex_[5:7],16)
+        c.drawString(xx+8, yy-14, f"RGB {r},{g},{b}")
+        c.drawString(xx+8, yy-26, f"HEX {hex_}")
+ 
+    # NEUTRALS
+    c.setFont("Courier", 9)
+    c.setFillColor(CYAN)
+    c.drawString(40, H-445, "NEUTROS / TEXTO")
+    neutrals = [
+        ("#E8EDF2","Text Primary"),("#8A9AB0","Text Secondary"),
+        ("#4A5A70","Text Tertiary"),("#1A2535","Surface 2"),
+        ("#1E2D3D","Border"),("#263344","Border Active")
+    ]
+    neu_w = (W-80-50)/6
+    for i,(hex_,name) in enumerate(neutrals):
+        xx = 40 + i*(neu_w+10)
+        yy = H-500
+        c.setFillColor(HexColor(hex_))
+        c.roundRect(xx, yy, neu_w, 40, 6, fill=1, stroke=0)
+        c.setFont("Courier", 7)
+        fg2 = BG if i < 3 else CYAN
+        c.setFillColor(fg2)
+        c.drawCentredString(xx+neu_w/2, yy+14, hex_)
+        c.setFillColor(TEXT3)
+        c.setFont("Helvetica", 7.5)
+        c.drawCentredString(xx+neu_w/2, yy-12, name)
+ 
+    # COLOR USAGE
+    c.setFont("Courier", 9)
+    c.setFillColor(CYAN)
+    c.drawString(40, H-540, "DISTRIBUCIÓN RECOMENDADA")
+    c.setFillColor(SURFACE)
+    c.roundRect(40, H-610, W-80, 55, 8, fill=1, stroke=0)
+    # Color bar proportion
+    bar_x = 56
+    bar_y = H-590
+    bar_h = 28
+    bar_total = W - 112
+    segs = [(BG, 0.60, "#080C10 · 60% fondos"), (SURFACE, 0.20, "#141C26 · 20% superficies"), (CYAN, 0.10, "#00D4C8 · 10% acción"), (PURPLE, 0.06, "#7C6DF0 · 6%"), (AMBER, 0.04, "#F0A832 · 4%")]
+    cx_bar = bar_x
+    for color, pct, _ in segs:
+        sw = bar_total * pct
+        c.setFillColor(color)
+        c.rect(cx_bar, bar_y, sw, bar_h, fill=1, stroke=0)
+        cx_bar += sw
+    c.setStrokeColor(BG)
+    c.setLineWidth(1)
+    cx_bar2 = bar_x
+    for color, pct, label in segs:
+        sw = bar_total * pct
+        c.line(cx_bar2 + sw, bar_y, cx_bar2 + sw, bar_y + bar_h)
+        if sw > 30:
+            c.setFont("Courier", 7)
+            c.setFillColor(TEXT3)
+            c.drawString(cx_bar2+4, bar_y-14, label)
+        cx_bar2 += sw
+ 
+    # GRADIENTS note
+    c.setFillColor(PURP_DIM)
+    c.roundRect(40, 36, W-80, 40, 8, fill=1, stroke=0)
+    c.setStrokeColor(HexColor("#1F1A45"))
+    c.setLineWidth(0.5)
+    c.roundRect(40, 36, W-80, 40, 8, fill=0, stroke=1)
+    c.setFont("Courier", 8)
+    c.setFillColor(PURPLE)
+    c.drawString(56, 64, "MODO OSCURO OBLIGATORIO")
+    c.setFont("Helvetica", 9)
+    c.setFillColor(TEXT2)
+    c.drawString(56, 50, "Todos los fondos digitales usan la paleta oscura. Reservar la versión clara para impresión y documentos formales.")
+ 
+    page_number_label(c, 6)
+ 
+ 
+# ══════════════════════════════════════════════════════════════════════════════
+#  PAGE 7 — TIPOGRAFÍA
+# ══════════════════════════════════════════════════════════════════════════════
+def page_tipografia(c):
+    full_bg(c)
+    dot_grid(c, HexColor("#0D1E1D"), 28, 0.6)
+    c.setStrokeColor(CYAN)
+    c.setLineWidth(2)
+    c.line(0, H-3, W, H-3)
+ 
+    c.setFont("Courier", 9)
+    c.setFillColor(CYAN)
+    c.drawString(40, H-42, "// 05 — TIPOGRAFÍA")
+    c.setFont("Helvetica-Bold", 32)
+    c.setFillColor(TEXT)
+    c.drawString(40, H-80, "Tipografía")
+    c.setFont("Helvetica", 11)
+    c.setFillColor(TEXT2)
+    c.drawString(40, H-100, "Sistema de tres familias tipográficas para distintos roles dentro de la marca.")
+ 
+    # Font 1 — Display
+    c.setFillColor(SURFACE)
+    c.roundRect(40, H-260, W-80, 145, 10, fill=1, stroke=0)
+    label_tag(c, 56, H-127, "DISPLAY / TITULARES")
+    c.setFont("Helvetica-Bold", 9)
+    c.setFillColor(CYAN)
+    c.drawString(56, H-145, "Syne — Bold 700/800")
+    c.setFont("Helvetica-Bold", 38)
+    c.setFillColor(TEXT)
+    c.drawString(56, H-202, "Aa Bb Cc Dd Ee Ff")
+    c.setFont("Helvetica-Bold", 14)
+    c.setFillColor(TEXT2)
+    c.drawString(56, H-225, "ABCDEFGHIJKLMNOPQRSTUVWXYZ  0123456789")
+    c.setFont("Helvetica", 9)
+    c.setFillColor(TEXT3)
+    c.drawString(56, H-242, "Uso: títulos, hero, números grandes, CTAs, nombre de marca")
+ 
+    # Font 2 — Body
+    c.setFillColor(SURFACE)
+    c.roundRect(40, H-425, W-80, 145, 10, fill=1, stroke=0)
+    label_tag(c, 56, H-292, "CUERPO DE TEXTO")
+    c.setFont("Helvetica-Bold", 9)
+    c.setFillColor(PURPLE)
+    c.drawString(56, H-310, "DM Sans — Regular 400 / Medium 500")
+    c.setFont("Helvetica", 30)
+    c.setFillColor(TEXT)
+    c.drawString(56, H-356, "Aprendé IA de forma real y práctica.")
+    c.setFont("Helvetica", 12)
+    c.setFillColor(TEXT2)
+    c.drawString(56, H-378, "La plataforma donde dominás la inteligencia artificial haciendo, no leyendo.")
+    c.setFont("Helvetica", 9)
+    c.setFillColor(TEXT3)
+    c.drawString(56, H-398, "Uso: párrafos, UI labels, descripciones, navegación, body copy")
+ 
+    # Font 3 — Mono
+    c.setFillColor(SURFACE)
+    c.roundRect(40, H-590, W-80, 145, 10, fill=1, stroke=0)
+    label_tag(c, 56, H-457, "CÓDIGO / ACENTO TÉCNICO", AMBER, BG)
+    c.setFont("Helvetica-Bold", 9)
+    c.setFillColor(AMBER)
+    c.drawString(56, H-475, "DM Mono — Light 300 / Regular 400")
+    c.setFont("Courier", 26)
+    c.setFillColor(CYAN)
+    c.drawString(56, H-522, "// LEARN ARTIFICIAL INTELLIGENCE")
+    c.setFont("Courier", 12)
+    c.setFillColor(TEXT2)
+    c.drawString(56, H-544, "prompt_score: 91/100  ·  level: intermedio  ·  xp: +150")
+    c.setFont("Helvetica", 9)
+    c.setFillColor(TEXT3)
+    c.drawString(56, H-564, "Uso: etiquetas, métricas, código, badges, tags, timestamps")
+ 
+    # Type scale
+    c.setFont("Courier", 9)
+    c.setFillColor(CYAN)
+    c.drawString(40, H-615, "ESCALA TIPOGRÁFICA")
+    scale = [
+        ("88px", "Hero"),("52px","H1"),("36px","H2"),("24px","H3"),
+        ("18px","Body L"),("16px","Body"),("14px","Small"),("12px","Caption")
+    ]
+    scw = (W-80)/len(scale)
+    for i,(sz,nm) in enumerate(scale):
+        xx = 40 + i*scw
+        c.setFillColor(SURFACE)
+        c.roundRect(xx+2, H-660, scw-4, 34, 6, fill=1, stroke=0)
+        c.setFont("Courier", 8)
+        c.setFillColor(CYAN)
+        c.drawCentredString(xx+scw/2, H-638, sz)
+        c.setFont("Helvetica", 8)
+        c.setFillColor(TEXT3)
+        c.drawCentredString(xx+scw/2, H-650, nm)
+ 
+    page_number_label(c, 7)
+ 
+ 
+# ══════════════════════════════════════════════════════════════════════════════
+#  PAGE 8 — ELEMENTOS VISUALES
+# ══════════════════════════════════════════════════════════════════════════════
+def page_elementos(c):
+    full_bg(c)
+    c.setStrokeColor(CYAN)
+    c.setLineWidth(2)
+    c.line(0, H-3, W, H-3)
+ 
+    c.setFont("Courier", 9)
+    c.setFillColor(CYAN)
+    c.drawString(40, H-42, "// 06 — ELEMENTOS VISUALES")
+    c.setFont("Helvetica-Bold", 32)
+    c.setFillColor(TEXT)
+    c.drawString(40, H-80, "Elementos de marca")
+ 
+    # Grid pattern
+    label_tag(c, 40, H-115, "GRID PATTERN")
+    c.setFillColor(SURFACE)
+    c.roundRect(40, H-250, 235, 120, 10, fill=1, stroke=0)
+    c.saveState()
+    c.clipPath(c.beginPath())
+    path = c.beginPath()
+    path.rect(40, H-250, 235, 120)
+    c.clipPath(path, stroke=0)
+    c.setStrokeColor(HexColor("#0D2A29"))
+    c.setLineWidth(0.5)
+    for gx in range(40, 280, 15):
+        c.line(gx, H-250, gx, H-130)
+    for gy in range(int(H)-250, int(H)-129, 15):
+        c.line(40, gy, 275, gy)
+    c.setFillColor(CYAN)
+    for gx in range(40, 280, 15):
+        for gy in range(int(H)-250, int(H)-129, 15):
+            c.circle(gx, gy, 1.0, fill=1, stroke=0)
+    c.restoreState()
+    c.setFont("Helvetica", 9)
+    c.setFillColor(TEXT3)
+    c.drawString(40, H-268, "Grid base: 15px · Color: #00D4C8 · Opacidad: 6%")
+ 
+    # Dot pattern
+    label_tag(c, 295, H-115, "DOT PATTERN")
+    c.setFillColor(SURFACE)
+    c.roundRect(295, H-250, 260, 120, 10, fill=1, stroke=0)
+    c.saveState()
+    path2 = c.beginPath()
+    path2.rect(295, H-250, 260, 120)
+    c.clipPath(path2, stroke=0)
+    c.setFillColor(HexColor("#0D2A29"))
+    for gx in range(295, 560, 12):
+        for gy in range(int(H)-250, int(H)-129, 12):
+            c.circle(gx, gy, 1.2, fill=1, stroke=0)
+    c.restoreState()
+    c.setFont("Helvetica", 9)
+    c.setFillColor(TEXT3)
+    c.drawString(295, H-268, "Dot grid: 12px · Color: #0D2A29")
+ 
+    # Lines
+    label_tag(c, 40, H-290, "LÍNEAS Y BORDES")
+    c.setFillColor(SURFACE)
+    c.roundRect(40, H-420, W-80, 112, 10, fill=1, stroke=0)
+    lines_data = [
+        ("Borde de card",         BORDER,   0.5,  [3,0], "0.5px · #1E2D3D"),
+        ("Borde activo",          BORDER2,  1.0,  [3,0], "1px · #263344"),
+        ("Línea de acento",       CYAN,     1.5,  [3,0], "1.5px · #00D4C8"),
+        ("Línea destacada",       CYAN,     2.0,  [3,0], "2px · #00D4C8"),
+        ("Separador punteado",    BORDER2,  1.0,  [4,4], "1px dashed · #263344"),
+    ]
+    for i, (name, color, lw, dash, spec) in enumerate(lines_data):
+        yy = H-325 - i*17
+        c.setStrokeColor(color)
+        c.setLineWidth(lw)
+        c.setDash(dash)
+        c.line(56, yy, 340, yy)
+        c.setDash([])
+        c.setFont("Helvetica", 9)
+        c.setFillColor(TEXT2)
+        c.drawString(355, yy-3, name)
+        c.setFont("Courier", 8)
+        c.setFillColor(TEXT3)
+        c.drawString(480, yy-3, spec)
+ 
+    # Shapes / badges
+    label_tag(c, 40, H-445, "BADGES Y ETIQUETAS")
+    c.setFillColor(SURFACE)
+    c.roundRect(40, H-550, W-80, 88, 10, fill=1, stroke=0)
+    badges = [
+        (CYAN_DIM,  CYAN,   "#0D3533", "Principiante"),
+        (PURP_DIM,  PURPLE, "#1F1A45", "Intermedio"),
+        (AMB_DIM,   AMBER,  "#2A1E08", "Avanzado"),
+        (GRN_DIM,   GREEN,  "#081F15", "Completado"),
+        (SURFACE2,  TEXT2,  "#2A3A4A", "Nuevo"),
+        (HexColor("#150A0A"), RED,    "#2A0808", "Error"),
+    ]
+    bx = 60
+    for bg_b, fg_b, bdr, txt in badges:
+        tw = c.stringWidth(txt, "Helvetica-Bold", 10) + 20
+        c.setFillColor(HexColor(bdr) if isinstance(bdr,str) else bdr)
+        c.roundRect(bx, H-513, tw, 22, 5, fill=0, stroke=1)
+        c.setFillColor(bg_b)
+        c.roundRect(bx, H-513, tw, 22, 5, fill=1, stroke=0)
+        c.setFont("Helvetica-Bold", 10)
+        c.setFillColor(fg_b)
+        c.drawCentredString(bx + tw/2, H-505, txt)
+        bx += tw + 12
+ 
+    # Iconography note
+    label_tag(c, 40, H-570, "ICONOGRAFÍA")
+    c.setFillColor(SURFACE)
+    c.roundRect(40, H-650, W-80, 62, 10, fill=1, stroke=0)
+    icons = ["⚡", "🎯", "📚", "🔥", "🚀", "⚗️", "💼", "📊", "🤖", "✦", "⬟"]
+    ix = 60
+    for icon in icons:
+        c.setFont("Helvetica", 22)
+        c.setFillColor(TEXT)
+        c.drawString(ix, H-622, icon)
+        ix += 44
+    c.setFont("Helvetica", 9)
+    c.setFillColor(TEXT3)
+    c.drawString(60, H-638, "Sistema de iconos: emojis nativas + Lucide Icons. Tamaño base 20px en UI, 44px en features.")
+ 
+    page_number_label(c, 8)
+ 
+ 
+# ══════════════════════════════════════════════════════════════════════════════
+#  PAGE 9 — TEXTURAS
+# ══════════════════════════════════════════════════════════════════════════════
+def page_texturas(c):
+    full_bg(c)
+    c.setStrokeColor(CYAN)
+    c.setLineWidth(2)
+    c.line(0, H-3, W, H-3)
+ 
+    c.setFont("Courier", 9)
+    c.setFillColor(CYAN)
+    c.drawString(40, H-42, "// 07 — TEXTURAS Y FONDOS")
+    c.setFont("Helvetica-Bold", 32)
+    c.setFillColor(TEXT)
+    c.drawString(40, H-80, "Texturas")
+ 
+    tex_items = [
+        ("Deep Space",      BG,      "Fondo principal de la app"),
+        ("Card Surface",    SURFACE, "Fondo de tarjetas y paneles"),
+        ("Elevated",        SURFACE2,"Elementos elevados, hover states"),
+        ("Cyan Wash",       CYAN_DIM,"Highlights, selección activa"),
+        ("Purple Wash",     PURP_DIM,"Acciones secundarias, tags"),
+        ("Amber Wash",      AMB_DIM, "Advertencias, métricas"),
+    ]
+ 
+    col_w = (W - 80 - 16) / 2
+    for i, (name, color, desc) in enumerate(tex_items):
+        row = i // 2
+        col = i % 2
+        xx = 40 + col * (col_w + 16)
+        yy = H - 180 - row * 130
+ 
+        # Texture swatch with pattern
+        c.setFillColor(color)
+        c.roundRect(xx, yy, col_w, 90, 10, fill=1, stroke=0)
+        # overlay grid
+        c.saveState()
+        path = c.beginPath()
+        path.rect(xx, yy, col_w, 90)
+        c.clipPath(path, stroke=0)
+        c.setStrokeColor(HexColor("#00D4C8"))
+        c.setLineWidth(0.3)
+        for gx2 in range(int(xx), int(xx+col_w)+20, 20):
+            c.line(gx2, yy, gx2, yy+90)
+        for gy2 in range(int(yy), int(yy+90)+20, 20):
+            c.line(xx, gy2, xx+col_w, gy2)
+        c.restoreState()
+        # name
+        c.setFont("Helvetica-Bold", 14)
+        c.setFillColor(TEXT)
+        c.drawString(xx+14, yy+58, name)
+        c.setFont("Courier", 9)
+        c.setFillColor(CYAN)
+        r,g2,b2 = color.red*255, color.green*255, color.blue*255
+        c.drawString(xx+14, yy+40, f"#{int(r):02X}{int(g2):02X}{int(b2):02X}")
+        c.setFont("Helvetica", 9)
+        c.setFillColor(TEXT2)
+        c.drawString(xx+14, yy+22, desc)
+ 
+    # Glow effects note
+    glow_y = H - 610
+    label_tag(c, 40, glow_y, "EFECTO GLOW — CÓMO SIMULAR")
+    c.setFillColor(SURFACE)
+    c.roundRect(40, glow_y-110, W-80, 95, 10, fill=1, stroke=0)
+ 
+    # Glow demo — concentric circles getting lighter
+    glow_cx = 140
+    glow_cy = glow_y - 60
+    for r2, alpha in [(50,0.03),(38,0.05),(26,0.08),(16,0.12),(8,0.2)]:
+        r_val = int(0*255); g_val = int(212*255//255); b_val = int(200*255//255)
+        glow_c = Color(0, 212/255, 200/255, alpha)
+        c.setFillColor(glow_c)
+        c.circle(glow_cx, glow_cy, r2, fill=1, stroke=0)
+    draw_logo_symbol(c, glow_cx, glow_cy, 1.2)
+ 
+    c.setFont("Helvetica", 10)
+    c.setFillColor(TEXT2)
+    c.drawString(200, glow_y-40, "El efecto glow se logra con capas concéntricas")
+    c.drawString(200, glow_y-56, "de círculos semitransparentes sobre el elemento.")
+    c.setFont("Courier", 9)
+    c.setFillColor(CYAN)
+    c.drawString(200, glow_y-76, "box-shadow: 0 8px 30px rgba(0,212,200,0.25)")
+    c.drawString(200, glow_y-90, "Solo usar en highlights clave. No abusar.")
+ 
+    # Noise texture note
+    noise_y = glow_y - 140
+    label_tag(c, 40, noise_y, "TEXTURA GRAIN / NOISE")
+    c.setFillColor(SURFACE)
+    c.roundRect(40, noise_y-80, W-80, 65, 10, fill=1, stroke=0)
+    import random
+    random.seed(42)
+    for _ in range(900):
+        nx = random.uniform(56, W-56)
+        ny = random.uniform(noise_y-78, noise_y-18)
+        alpha = random.uniform(0.02, 0.07)
+        c.setFillColor(Color(1,1,1,alpha))
+        c.circle(nx, ny, random.uniform(0.3,1.0), fill=1, stroke=0)
+    c.setFont("Helvetica", 9)
+    c.setFillColor(TEXT3)
+    c.drawString(56, noise_y-56, "Noise sutil (5% opacidad) sobre fondos oscuros. Agrega profundidad y textura orgánica.")
+    c.drawString(56, H-800, "CSS: background-image: url(noise.png); opacity: 0.05; mix-blend-mode: overlay;")
+ 
+    page_number_label(c, 9)
+ 
+ 
+# ══════════════════════════════════════════════════════════════════════════════
+#  PAGE 10 — MOCKUPS
+# ══════════════════════════════════════════════════════════════════════════════
+def page_mockups(c):
+    full_bg(c)
+    dot_grid(c, HexColor("#0D1E1D"), 28, 0.6)
+    c.setStrokeColor(CYAN)
+    c.setLineWidth(2)
+    c.line(0, H-3, W, H-3)
+ 
+    c.setFont("Courier", 9)
+    c.setFillColor(CYAN)
+    c.drawString(40, H-42, "// 08 — MOCKUPS")
+    c.setFont("Helvetica-Bold", 32)
+    c.setFillColor(TEXT)
+    c.drawString(40, H-80, "Aplicaciones")
+    c.setFont("Helvetica", 11)
+    c.setFillColor(TEXT2)
+    c.drawString(40, H-100, "La marca en contextos reales: web, móvil y redes sociales.")
+ 
+    # ── BROWSER MOCKUP
+    label_tag(c, 40, H-125, "WEB APP")
+    bx, by, bw, bh = 40, H-370, W-80, 228
+    # Browser frame
+    c.setFillColor(HexColor("#1A2535"))
+    c.roundRect(bx, by, bw, bh, 10, fill=1, stroke=0)
+    c.setStrokeColor(BORDER2)
+    c.setLineWidth(0.5)
+    c.roundRect(bx, by, bw, bh, 10, fill=0, stroke=1)
+    # Browser bar
+    c.setFillColor(HexColor("#0D1520"))
+    c.rect(bx, by+bh-30, bw, 30, fill=1, stroke=0)
+    c.setStrokeColor(BORDER)
+    c.setLineWidth(0.3)
+    c.line(bx, by+bh-30, bx+bw, by+bh-30)
+    # Dots
+    for di, dc in enumerate([RED, AMBER, GREEN]):
+        c.setFillColor(dc)
+        c.circle(bx+16+di*14, by+bh-15, 5, fill=1, stroke=0)
+    # URL bar
+    c.setFillColor(SURFACE)
+    c.roundRect(bx+60, by+bh-24, bw-120, 18, 4, fill=1, stroke=0)
+    c.setFont("Courier", 8)
+    c.setFillColor(TEXT3)
+    c.drawCentredString(bx+bw/2, by+bh-18, "learni.ng/dashboard")
+    # Nav in browser
+    c.setFillColor(BG)
+    c.rect(bx, by+bh-64, bw, 34, fill=1, stroke=0)
+    draw_logo_symbol(c, bx+30, by+bh-47, 0.7)
+    c.setFont("Helvetica", 7)
+    c.setFillColor(TEXT2)
+    for ni, nm in enumerate(["Niveles","Features","Comparador","Comunidad"]):
+        c.drawString(bx+70+ni*70, by+bh-50, nm)
+    c.setFillColor(CYAN)
+    c.roundRect(bx+bw-85, by+bh-56, 72, 18, 4, fill=1, stroke=0)
+    c.setFont("Helvetica-Bold", 8)
+    c.setFillColor(BG)
+    c.drawCentredString(bx+bw-49, by+bh-50, "Empezar →")
+    # Hero in browser
+    c.setFillColor(BG)
+    c.rect(bx, by, bw, bh-64, fill=1, stroke=0)
+    c.setFont("Helvetica-Bold", 20)
+    c.setFillColor(TEXT)
+    c.drawString(bx+24, by+130, "Dominá la inteligencia")
+    c.setFillColor(CYAN)
+    c.drawString(bx+24, by+108, "artificial de verdad.")
+    c.setFont("Helvetica", 9)
+    c.setFillColor(TEXT2)
+    c.drawString(bx+24, by+90, "Aprendé con IA en tiempo real. Práctica, no teoría.")
+    c.setFillColor(CYAN)
+    c.roundRect(bx+24, by+56, 100, 22, 5, fill=1, stroke=0)
+    c.setFont("Helvetica-Bold", 9)
+    c.setFillColor(BG)
+    c.drawCentredString(bx+74, by+69, "⚡ Empezar gratis")
+    c.setFillColor(SURFACE)
+    c.roundRect(bx+135, by+56, 80, 22, 5, fill=1, stroke=0)
+    c.setFont("Helvetica", 9)
+    c.setFillColor(TEXT2)
+    c.drawCentredString(bx+175, by+69, "Ver demo")
+ 
+    # ── PHONE MOCKUP
+    label_tag(c, 40, H-400, "APP MÓVIL")
+    ph_x, ph_y, ph_w, ph_h = 40, H-660, 120, 240
+    c.setFillColor(HexColor("#1A2535"))
+    c.roundRect(ph_x, ph_y, ph_w, ph_h, 18, fill=1, stroke=0)
+    c.setStrokeColor(BORDER2)
+    c.setLineWidth(1)
+    c.roundRect(ph_x, ph_y, ph_w, ph_h, 18, fill=0, stroke=1)
+    # Notch
+    c.setFillColor(BG)
+    c.roundRect(ph_x+35, ph_y+ph_h-14, 50, 10, 5, fill=1, stroke=0)
+    # Screen
+    c.setFillColor(BG)
+    c.roundRect(ph_x+4, ph_y+6, ph_w-8, ph_h-12, 14, fill=1, stroke=0)
+    draw_logo_symbol(c, ph_x+ph_w/2, ph_y+ph_h-42, 0.7)
+    c.setFont("Helvetica-Bold", 8)
+    c.setFillColor(TEXT)
+    c.drawCentredString(ph_x+ph_w/2, ph_y+ph_h-64, "LeAIrning")
+    c.setFont("Helvetica", 7)
+    c.setFillColor(TEXT3)
+    c.drawCentredString(ph_x+ph_w/2, ph_y+ph_h-76, "Nivel 7 · AI Practitioner")
+    # XP bar
+    c.setFillColor(SURFACE2)
+    c.roundRect(ph_x+14, ph_y+ph_h-92, 92, 8, 4, fill=1, stroke=0)
+    c.setFillColor(CYAN)
+    c.roundRect(ph_x+14, ph_y+ph_h-92, 62, 8, 4, fill=1, stroke=0)
+    # Cards
+    for ci in range(2):
+        c.setFillColor(SURFACE)
+        c.roundRect(ph_x+10, ph_y+130-ci*50, ph_w-20, 40, 6, fill=1, stroke=0)
+        c.setFont("Courier", 6)
+        c.setFillColor(CYAN)
+        c.drawString(ph_x+16, ph_y+158-ci*50, "LESSON " + str(ci+1))
+        c.setFont("Helvetica-Bold", 7)
+        c.setFillColor(TEXT)
+        c.drawString(ph_x+16, ph_y+148-ci*50, ["Prompt Engineering","Context Windows"][ci])
+    # Bottom nav
+    c.setFillColor(SURFACE)
+    c.rect(ph_x+4, ph_y+6, ph_w-8, 24, fill=1, stroke=0)
+    for ni, ico in enumerate(["⚡","📚","🔥","👤"]):
+        c.setFont("Helvetica", 11)
+        c.setFillColor(CYAN if ni==0 else TEXT3)
+        c.drawCentredString(ph_x+18+ni*24, ph_y+14, ico)
+ 
+    # ── SOCIAL post mockup
+    label_tag(c, 200, H-400, "REDES SOCIALES")
+    sp_x, sp_y, sp_w, sp_h = 200, H-660, 200, 240
+    c.setFillColor(SURFACE)
+    c.roundRect(sp_x, sp_y, sp_w, sp_h, 12, fill=1, stroke=0)
+    c.setStrokeColor(BORDER2)
+    c.setLineWidth(0.5)
+    c.roundRect(sp_x, sp_y, sp_w, sp_h, 12, fill=0, stroke=1)
+    c.setFillColor(BG)
+    c.roundRect(sp_x+8, sp_y+sp_h-70, sp_w-16, 62, 8, fill=1, stroke=0)
+    draw_logo_symbol(c, sp_x+32, sp_y+sp_h-38, 0.8)
+    c.setFont("Helvetica-Bold", 11)
+    c.setFillColor(TEXT)
+    le_w = c.stringWidth("Le","Helvetica",11)
+    c.drawString(sp_x+52, sp_y+sp_h-34, "Le")
+    c.setFillColor(CYAN)
+    c.setFont("Helvetica-Bold",11)
+    ai_w2 = c.stringWidth("AI","Helvetica-Bold",11)
+    c.drawString(sp_x+52+le_w, sp_y+sp_h-34, "AI")
+    c.setFillColor(TEXT)
+    c.setFont("Helvetica",11)
+    c.drawString(sp_x+52+le_w+ai_w2, sp_y+sp_h-34, "rning")
+    c.setFont("Courier", 7)
+    c.setFillColor(TEXT3)
+    c.drawString(sp_x+52, sp_y+sp_h-48, "@leairning")
+    # Post content
+    c.setFont("Helvetica-Bold", 10)
+    c.setFillColor(TEXT)
+    c.drawString(sp_x+14, sp_y+sp_h-90, "Tu prompt → promedio")
+    c.setFont("Helvetica", 9)
+    c.setFillColor(TEXT2)
+    c.drawString(sp_x+14, sp_y+sp_h-104, "Prompt optimizado → experto")
+    # Before/after mini
+    c.setFillColor(HexColor("#100A0A"))
+    c.roundRect(sp_x+10, sp_y+sp_h-178, 85, 66, 6, fill=1, stroke=0)
+    c.setFont("Courier", 6)
+    c.setFillColor(RED)
+    c.drawString(sp_x+16, sp_y+sp_h-126, "ANTES: 28pts")
+    c.setFont("Helvetica",7)
+    c.setFillColor(TEXT3)
+    c.drawString(sp_x+16, sp_y+sp_h-138, "escribi algo de")
+    c.drawString(sp_x+16, sp_y+sp_h-148, "marketing...")
+    c.setFillColor(HexColor("#080F0A"))
+    c.roundRect(sp_x+105, sp_y+sp_h-178, 85, 66, 6, fill=1, stroke=0)
+    c.setFont("Courier", 6)
+    c.setFillColor(GREEN)
+    c.drawString(sp_x+111, sp_y+sp_h-126, "DESPUES: 91pts")
+    c.setFont("Helvetica",6)
+    c.setFillColor(TEXT3)
+    c.drawString(sp_x+111, sp_y+sp_h-138, "Actuá como experto")
+    c.drawString(sp_x+111, sp_y+sp_h-148, "en mkt digital...")
+    # Hashtags
+    c.setFont("Courier", 7)
+    c.setFillColor(CYAN)
+    c.drawString(sp_x+14, sp_y+sp_h-196, "#AI #PromptEngineering")
+    # Likes
+    c.setFont("Helvetica", 9)
+    c.setFillColor(TEXT3)
+    c.drawString(sp_x+14, sp_y+20, "♥ 2.4K   💬 184   ↗ 890")
+ 
+    # Favicon
+    label_tag(c, 425, H-400, "FAVICON / APP ICON")
+    for fi, (sz, label) in enumerate([(64, "512px"), (40, "192px"), (28, "64px"), (16, "32px")]):
+        fx = 425 + fi*38
+        fy = H-640
+        c.setFillColor(BG)
+        c.roundRect(fx, fy, sz//2+8, sz//2+8, (sz//2+8)//4, fill=1, stroke=0)
+        c.setStrokeColor(BORDER)
+        c.setLineWidth(0.5)
+        c.roundRect(fx, fy, sz//2+8, sz//2+8, (sz//2+8)//4, fill=0, stroke=1)
+        draw_logo_symbol(c, fx+(sz//2+8)/2, fy+(sz//2+8)/2, sz/80)
+        c.setFont("Courier", 7)
+        c.setFillColor(TEXT3)
+        c.drawCentredString(fx+(sz//2+8)/2, fy-10, label)
+ 
+    page_number_label(c, 10)
+ 
+ 
+# ══════════════════════════════════════════════════════════════════════════════
+#  PAGE 11 — USOS INCORRECTOS
+# ══════════════════════════════════════════════════════════════════════════════
+def page_usos_incorrectos(c):
+    full_bg(c)
+    dot_grid(c, HexColor("#0D1E1D"), 28, 0.6)
+    c.setStrokeColor(RED)
+    c.setLineWidth(2)
+    c.line(0, H-3, W, H-3)
+ 
+    c.setFont("Courier", 9)
+    c.setFillColor(RED)
+    c.drawString(40, H-42, "// 09 — USOS INCORRECTOS")
+    c.setFont("Helvetica-Bold", 32)
+    c.setFillColor(TEXT)
+    c.drawString(40, H-80, "No hagas esto.")
+    c.setFont("Helvetica", 11)
+    c.setFillColor(TEXT2)
+    c.drawString(40, H-100, "Estas combinaciones y modificaciones están estrictamente prohibidas.")
+ 
+    def wrong_card(c, x, y, w, h, label, draw_fn):
+        c.setFillColor(HexColor("#120808"))
+        c.roundRect(x, y, w, h, 10, fill=1, stroke=0)
+        c.setStrokeColor(HexColor("#3A1010"))
+        c.setLineWidth(0.5)
+        c.roundRect(x, y, w, h, 10, fill=0, stroke=1)
+        draw_fn(c, x, y, w, h)
+        # X mark
+        c.setFillColor(RED)
+        c.circle(x+w-16, y+h-16, 10, fill=1, stroke=0)
+        c.setStrokeColor(WHITE)
+        c.setLineWidth(1.5)
+        c.line(x+w-21, y+h-11, x+w-11, y+h-21)
+        c.line(x+w-11, y+h-11, x+w-21, y+h-21)
+        c.setFont("Helvetica", 9)
+        c.setFillColor(RED)
+        c.drawString(x+6, y+8, label)
+ 
+    card_w = (W - 80 - 32) / 3
+    card_h = 110
+ 
+    # ROW 1
+    row1_y = H - 245
+ 
+    # 1 — wrong color
+    def wrong1(c, x, y, w, h):
+        draw_logo_symbol(c, x+50, y+h/2, 1.4, color=HexColor("#FF00AA"))
+        c.setFont("Helvetica-Bold", 22)
+        c.setFillColor(HexColor("#FF00AA"))
+        c.drawString(x+82, y+h/2-8, "LeAIrning")
+    wrong_card(c, 40, row1_y, card_w, card_h, "✕  Colores no autorizados", wrong1)
+ 
+    # 2 — stretched
+    def wrong2(c, x, y, w, h):
+        c.saveState()
+        c.transform(1.5, 0, 0, 0.7, x+10, y+10)
+        draw_logo_symbol(c, 44, h/2, 1.2)
+        c.setFont("Helvetica-Bold", 22)
+        c.setFillColor(TEXT)
+        c.drawString(76, h/2-8, "LeAIrning")
+        c.restoreState()
+    wrong_card(c, 40 + card_w + 16, row1_y, card_w, card_h, "✕  Deformar / estirar el logo", wrong2)
+ 
+    # 3 — low contrast
+    def wrong3(c, x, y, w, h):
+        c.setFillColor(HexColor("#0A1520"))
+        c.roundRect(x+4, y+14, w-8, h-24, 8, fill=1, stroke=0)
+        draw_logo_symbol(c, x+50, y+h/2, 1.3, color=HexColor("#0D2A29"))
+        c.setFont("Helvetica-Bold", 22)
+        c.setFillColor(HexColor("#0D2A29"))
+        c.drawString(x+82, y+h/2-8, "LeAIrning")
+    wrong_card(c, 40 + (card_w+16)*2, row1_y, card_w, card_h, "✕  Bajo contraste / invisible", wrong3)
+ 
+    # ROW 2
+    row2_y = H - 395
+ 
+    # 4 — rotated
+    def wrong4(c, x, y, w, h):
+        c.saveState()
+        c.translate(x+w/2, y+h/2)
+        c.rotate(25)
+        draw_logo_symbol(c, -40, -12, 1.2)
+        c.setFont("Helvetica-Bold", 20)
+        c.setFillColor(TEXT)
+        c.drawString(-8, -10, "LeAIrning")
+        c.restoreState()
+    wrong_card(c, 40, row2_y, card_w, card_h, "✕  Rotar el logo", wrong4)
+ 
+    # 5 — wrong bg
+    def wrong5(c, x, y, w, h):
+        c.setFillColor(HexColor("#E040FB"))
+        c.roundRect(x+4, y+14, w-8, h-24, 8, fill=1, stroke=0)
+        draw_logo_symbol(c, x+50, y+h/2, 1.3, color=WHITE)
+        c.setFont("Helvetica-Bold", 22)
+        c.setFillColor(WHITE)
+        c.drawString(x+82, y+h/2-8, "LeAIrning")
+    wrong_card(c, 40 + card_w + 16, row2_y, card_w, card_h, "✕  Fondos no autorizados", wrong5)
+ 
+    # 6 — modified typography
+    def wrong6(c, x, y, w, h):
+        draw_logo_symbol(c, x+50, y+h/2, 1.3)
+        c.setFont("Courier", 22)
+        c.setFillColor(CYAN)
+        c.drawString(x+82, y+h/2-4, "LEAIRNING")
+    wrong_card(c, 40 + (card_w+16)*2, row2_y, card_w, card_h, "✕  Cambiar fuente del wordmark", wrong6)
+ 
+    # ROW 3
+    row3_y = H - 545
+ 
+    # 7 — without clear space
+    def wrong7(c, x, y, w, h):
+        c.setFillColor(SURFACE)
+        c.roundRect(x+4, y+14, w-8, h-24, 8, fill=1, stroke=0)
+        draw_logo_symbol(c, x+20, y+h/2, 1.1)
+        c.setFont("Helvetica-Bold", 18)
+        c.setFillColor(TEXT)
+        c.drawString(x+48, y+h/2-4, "LeAIrning")
+        c.setFont("Helvetica", 14)
+        c.setFillColor(TEXT2)
+        c.drawString(x+48, y+h/2+16, "Aprendé IA ya mismo sin espacio")
+    wrong_card(c, 40, row3_y, card_w, card_h, "✕  Sin espacio de protección", wrong7)
+ 
+    # 8 — shadow/effect
+    def wrong8(c, x, y, w, h):
+        # fake glow by repeating offset
+        for off, alpha in [(5,0.3),(3,0.5),(1,0.8)]:
+            c.setFillColor(Color(0,1,0.8,alpha))
+            c.setFont("Helvetica-Bold", 24)
+            c.drawString(x+50+off, y+h/2-8+off, "LeAIrning")
+        c.setFillColor(CYAN)
+        c.setFont("Helvetica-Bold", 24)
+        c.drawString(x+50, y+h/2-8, "LeAIrning")
+    wrong_card(c, 40+card_w+16, row3_y, card_w, card_h, "✕  Sombras o efectos sobre el logo", wrong8)
+ 
+    # 9 — only text, no symbol
+    def wrong9(c, x, y, w, h):
+        c.setFont("Helvetica-Bold", 30)
+        c.setFillColor(CYAN)
+        c.drawCentredString(x+w/2, y+h/2-12, "LeAIrning")
+        c.setFont("Helvetica", 9)
+        c.setFillColor(TEXT3)
+        c.drawCentredString(x+w/2, y+h/2-28, "(sin isotipo)")
+    wrong_card(c, 40+(card_w+16)*2, row3_y, card_w, card_h, "✕  Wordmark sin isotipo en logo full", wrong9)
+ 
+    # Summary box
+    c.setFillColor(HexColor("#120808"))
+    c.roundRect(40, 36, W-80, 55, 8, fill=1, stroke=0)
+    c.setStrokeColor(HexColor("#3A1010"))
+    c.setLineWidth(0.5)
+    c.roundRect(40, 36, W-80, 55, 8, fill=0, stroke=1)
+    rules = ["Colores fuera de paleta","Deformar proporciones","Rotar el logo","Fondos no autorizados","Cambiar tipografía","Agregar efectos","Eliminar el isotipo","Bajo contraste","Sin área de protección"]
+    c.setFont("Courier", 8)
+    c.setFillColor(RED)
+    c.drawString(56, 78, "PROHIBIDO:")
+    c.setFont("Helvetica", 8.5)
+    c.setFillColor(TEXT2)
+    for i, rule in enumerate(rules):
+        col = i // 3
+        row = i % 3
+        c.drawString(140 + col*140, 80 - row*13, "✕ " + rule)
+ 
+    page_number_label(c, 11)
+ 
+ 
+# ══════════════════════════════════════════════════════════════════════════════
+#  PAGE 12 — CIERRE
+# ══════════════════════════════════════════════════════════════════════════════
+def page_cierre(c):
+    full_bg(c)
+    # Dot grid
+    c.saveState()
+    c.setFillColor(HexColor("#0D1E1D"))
+    for x in range(0, int(W)+30, 30):
+        for y in range(0, int(H)+30, 30):
+            c.circle(x, y, 0.7, fill=1, stroke=0)
+    c.restoreState()
+ 
+    c.setStrokeColor(CYAN)
+    c.setLineWidth(2)
+    c.line(0, H-3, W, H-3)
+ 
+    # Large decorative circle
+    c.saveState()
+    c.setStrokeColor(HexColor("#0D2A29"))
+    c.setLineWidth(1)
+    c.circle(-60, H/2 - 80, 280, stroke=1, fill=0)
+    c.circle(-60, H/2 - 80, 200, stroke=1, fill=0)
+    c.restoreState()
+ 
+    # Big symbol
+    draw_logo_symbol(c, W/2, H/2 + 60, 4.0)
+ 
+    c.setFont("Helvetica-Bold", 13)
+    c.setFillColor(TEXT3)
+    c.drawCentredString(W/2, H/2 - 30, "LeAIrning")
+ 
+    c.setFont("Helvetica", 11)
+    c.setFillColor(TEXT2)
+    c.drawCentredString(W/2, H/2 - 52, "La plataforma para dominar la inteligencia artificial")
+ 
+    c.setFont("Courier", 9)
+    c.setFillColor(CYAN)
+    c.drawCentredString(W/2, H/2 - 76, "learni.ng")
+ 
+    # Divider
+    c.setStrokeColor(BORDER)
+    c.setLineWidth(0.5)
+    c.line(W/2 - 100, H/2 - 100, W/2 + 100, H/2 - 100)
+ 
+    c.setFont("Helvetica", 10)
+    c.setFillColor(TEXT3)
+    c.drawCentredString(W/2, H/2 - 125, "Para consultas de marca: design@learni.ng")
+ 
+    # Bottom
+    c.setFillColor(SURFACE)
+    c.rect(0, 0, W, 60, fill=1, stroke=0)
+    c.setStrokeColor(BORDER)
+    c.setLineWidth(0.5)
+    c.line(0, 60, W, 60)
+    c.setFont("Courier", 8)
+    c.setFillColor(TEXT3)
+    c.drawCentredString(W/2, 36, "Brand Identity Guidelines v1.0 · LeAIrning · 2026 · Todos los derechos reservados")
+    c.drawCentredString(W/2, 22, "12 / 12")
+ 
+ 
+# ══════════════════════════════════════════════════════════════════════════════
+#  BUILD
+# ══════════════════════════════════════════════════════════════════════════════
+output = "/home/claude/leairning_brand.pdf"
+c = canvas.Canvas(output, pagesize=A4)
+c.setTitle("LeAIrning — Brand Identity Guidelines")
+c.setAuthor("LeAIrning")
+c.setSubject("Brand Identity Guidelines v1.0")
+ 
+page_cover(c);       new_page(c)
+page_index(c);       new_page(c)
+page_logo(c);        new_page(c)
+page_variantes(c);   new_page(c)
+page_isotipo(c);     new_page(c)
+page_colores(c);     new_page(c)
+page_tipografia(c);  new_page(c)
+page_elementos(c);   new_page(c)
+page_texturas(c);    new_page(c)
+page_mockups(c);     new_page(c)
+page_usos_incorrectos(c); new_page(c)
+page_cierre(c)
+ 
+c.save()
+print(f"PDF generado: {output}")
+import os
+print(f"Tamaño: {os.path.getsize(output):,} bytes")
